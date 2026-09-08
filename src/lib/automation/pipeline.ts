@@ -145,7 +145,7 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
     // 4. Generate AI Article purely from verified facts
     const generated = await generateAIArticle(item, verification);
 
-    const imageInfo = fetchFeaturedImage(item.category);
+    const imageInfo = fetchFeaturedImage(item.category, item.title, item.imageUrl);
     const author = authors[processedCount % authors.length] || authors[0];
     const pubDate = new Date().toISOString();
     const topicObj = db.getTopics().find(t => t.name.toLowerCase() === item.category.toLowerCase()) || db.getTopics()[0];

@@ -162,6 +162,27 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               />
             </div>
 
+            {/* Frequently Asked Questions (FAQ) Section */}
+            {article.faq && article.faq.length > 0 && (
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+                <h3 className="text-lg font-bold font-headline text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                  <span>Frequently Asked Questions</span>
+                </h3>
+                <div className="space-y-4">
+                  {article.faq.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                      <h4 className="font-bold text-sm text-slate-900 font-heading">
+                        {item.question}
+                      </h4>
+                      <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                        {item.answer}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Footnote Journalistic Citation Box */}
             <VerificationBadge
               score={article.trustScore}
