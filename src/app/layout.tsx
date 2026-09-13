@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://worldbulletin.world'
   },
+  other: {
+    'google-adsense-account': 'ca-pub-1941031216214407'
+  },
   openGraph: {
     title: 'World Bulletin | Fact-Checked Automated AI Journalism',
     description: 'World Bulletin is an automated worldwide artificial intelligence news platform.',
@@ -41,6 +44,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
+        {/* Google AdSense Account Meta Tag */}
+        <meta name="google-adsense-account" content="ca-pub-1941031216214407" />
+
         {/* Google tag (gtag.js) - Official Setup */}
         <script
           async
