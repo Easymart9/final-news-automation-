@@ -12,7 +12,7 @@ interface VerificationBadgeProps {
 }
 
 export const VerificationBadge: React.FC<VerificationBadgeProps> = ({ score, status, sources = [], compact = false }) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
   const safeSources = Array.isArray(sources) ? sources : [];
 
   if (compact || safeSources.length === 0) return null;
