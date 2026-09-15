@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { db } from '@/lib/db';
 import { ArticleCard } from '@/components/ArticleCard';
 import { ArrowLeft, Award, Twitter, Linkedin } from 'lucide-react';
+import { AdsterraResponsiveBanner, AdsterraNativeBanner } from '@/components/ads';
 
 import { Metadata } from 'next';
 
@@ -115,6 +116,11 @@ export default function AuthorPage({ params }: AuthorPageProps) {
 
       {/* Author Articles */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        {/* Author Top Leaderboard Ad */}
+        <div className="mb-8">
+          <AdsterraResponsiveBanner />
+        </div>
+
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-3">
             <h2 className="font-heading font-extrabold text-lg text-slate-900">
@@ -127,6 +133,9 @@ export default function AuthorPage({ params }: AuthorPageProps) {
               <ArticleCard key={article.id} article={article} />
             ))}
           </div>
+
+          {/* In-feed Native Banner */}
+          <AdsterraNativeBanner label="Sponsored Research & Insights" />
         </div>
       </div>
     </div>

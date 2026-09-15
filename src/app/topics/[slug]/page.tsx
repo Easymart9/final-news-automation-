@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { db } from '@/lib/db';
 import { ArticleCard } from '@/components/ArticleCard';
 import { ArrowLeft, BookOpen } from 'lucide-react';
+import { AdsterraResponsiveBanner, AdsterraNativeBanner } from '@/components/ads';
 
 import { Metadata } from 'next';
 
@@ -63,8 +64,13 @@ export default function TopicPage({ params, searchParams }: TopicPageProps) {
         </div>
       </div>
 
+      {/* Top Header Leaderboard Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <AdsterraResponsiveBanner />
+      </div>
+
       {/* Topic Desk Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 news-border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 news-border-b">
         <div className="max-w-3xl space-y-3">
           <div className="flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-widest font-heading">
             <BookOpen className="w-4 h-4" />
@@ -96,6 +102,9 @@ export default function TopicPage({ params, searchParams }: TopicPageProps) {
                   <ArticleCard key={article.id} article={article} />
                 ))}
               </div>
+
+              {/* In-feed Native Banner */}
+              <AdsterraNativeBanner label="Sponsored Research & Topic Recommendations" />
 
               {/* Pagination Controls */}
               {totalPages > 1 && (

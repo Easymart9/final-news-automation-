@@ -6,6 +6,7 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { NewsTicker } from '@/components/NewsTicker';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { Clock, ArrowUpRight, ChevronRight, TrendingUp, BookOpen, ShieldCheck, Sparkles, Flame, CheckCircle2 } from 'lucide-react';
+import { AdsterraResponsiveBanner, AdsterraNativeBanner, AdsterraSidebarAd } from '@/components/ads';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,6 +36,11 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
     <div className="bg-[#fafafa] min-h-screen pb-24 font-sans text-slate-900 selection:bg-sky-500/30">
       {/* Breaking News Ticker */}
       <NewsTicker articles={articles} />
+
+      {/* Top Header Leaderboard Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <AdsterraResponsiveBanner />
+      </div>
 
       {/* HERO SECTION WITH FEATURED CAROUSEL & BREAKING HEADLINES GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 news-border-b">
@@ -176,6 +182,12 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
           </div>
         </div>
       </section>
+
+      {/* Mid-Page Leaderboard Advertisement */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <AdsterraResponsiveBanner />
+      </div>
+
       {/* FEATURED DEEP DIVES & SPECIAL REPORTS */}
       {specialReports.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 news-border-b">
@@ -264,6 +276,9 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
               ))}
             </div>
 
+            {/* In-feed Native Banner Advertisement */}
+            <AdsterraNativeBanner label="Recommended Technical Insights & Partner News" />
+
             {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="pt-8 border-t border-slate-100 flex items-center justify-between gap-4 font-mono text-xs">
@@ -310,6 +325,9 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
                 ))}
               </div>
             </div>
+
+            {/* Sidebar Adsterra Unit */}
+            <AdsterraSidebarAd />
 
             {/* Verification Telemetry Badge */}
             <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">

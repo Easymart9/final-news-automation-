@@ -10,6 +10,7 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { generateNewsArticleSchema, generateBreadcrumbSchema } from '@/lib/services/seo-engine';
 import { ShareButtons } from '@/components/ShareButtons';
 import { Clock, Calendar, ArrowLeft, Tag, ShieldCheck, Award, Scale } from 'lucide-react';
+import { AdsterraResponsiveBanner, AdsterraNativeBanner, AdsterraSidebarAd } from '@/components/ads';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,8 +133,13 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </header>
 
+      {/* Top Header Leaderboard Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <AdsterraResponsiveBanner />
+      </div>
+
       {/* MAIN CONTENT GRID (8 Columns Body / 4 Columns Sticky Sidebar) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Content Column (8 Cols) */}
           <div className="lg:col-span-8 space-y-8">
@@ -161,6 +167,9 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
             </div>
+
+            {/* Native Banner Ad below article content */}
+            <AdsterraNativeBanner label="Sponsored Research & Relevant Technical Stories" />
 
             {/* Frequently Asked Questions (FAQ) Section */}
             {article.faq && article.faq.length > 0 && (
@@ -245,6 +254,9 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </h4>
               <AuthorCard author={article.author} />
             </div>
+
+            {/* Sidebar Ad Unit */}
+            <AdsterraSidebarAd />
 
             {/* Editorial Standard Stamp */}
             <div className="bg-slate-100 p-6 rounded-3xl border border-slate-200 space-y-3">
