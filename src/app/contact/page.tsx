@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Mail, MessageSquare, MapPin, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
+import { AdsterraResponsiveBanner } from '@/components/ads';
 
 export const metadata: Metadata = {
   title: 'Contact Us | World Bulletin Editorial Desk',
@@ -31,8 +32,13 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* Top Header Leaderboard Banner */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <AdsterraResponsiveBanner />
+      </div>
+
       {/* Main Content Grid */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Left Column: Direct Contacts */}
           <div className="md:col-span-5 space-y-6">

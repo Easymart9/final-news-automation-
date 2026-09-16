@@ -161,11 +161,39 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             </div>
 
             {/* Immersive Article Content Container */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-xs">
-              <div 
-                className="article-body font-serif text-lg text-slate-800 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 md:p-10 shadow-xs space-y-6">
+              {(() => {
+                const parts = article.content.split(/(?=<h2>)/i);
+                if (parts.length >= 3) {
+                  const mid = Math.ceil(parts.length / 2);
+                  const firstHalf = parts.slice(0, mid).join('');
+                  const secondHalf = parts.slice(mid).join('');
+                  return (
+                    <>
+                      <div 
+                        className="article-body font-serif text-lg text-slate-800 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: firstHalf }}
+                      />
+                      
+                      {/* Mid-Article Responsive Advertisement */}
+                      <div className="my-8 py-4 px-2 border-y border-slate-200/80 bg-slate-50/80 rounded-2xl">
+                        <AdsterraResponsiveBanner />
+                      </div>
+
+                      <div 
+                        className="article-body font-serif text-lg text-slate-800 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: secondHalf }}
+                      />
+                    </>
+                  );
+                }
+                return (
+                  <div 
+                    className="article-body font-serif text-lg text-slate-800 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: article.content }}
+                  />
+                );
+              })()}
             </div>
 
             {/* Native Banner Ad below article content */}

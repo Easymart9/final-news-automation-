@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, Target, Award, Users, BookOpen, CheckCircle, Scale } from 'lucide-react';
+import { AdsterraResponsiveBanner, AdsterraNativeBanner } from '@/components/ads';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -121,6 +122,12 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
+
+        {/* Mid-Page Responsive Ad Banner */}
+        <AdsterraResponsiveBanner />
+
+        {/* Native Banner Advertisement */}
+        <AdsterraNativeBanner label="Sponsored Research & Insights" />
 
         {/* Contact & Editorial Inquiries */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-8 sm:p-10 border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
