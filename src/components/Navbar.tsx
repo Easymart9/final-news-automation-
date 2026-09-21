@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, Globe, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio } from 'lucide-react';
+import { Menu, X, Search, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio } from 'lucide-react';
 import { SearchModal } from '@/components/SearchModal';
 
 export const Navbar = () => {
@@ -44,15 +44,15 @@ export const Navbar = () => {
     <>
       <header className="bg-white text-slate-900 font-sans border-b border-slate-200">
         {/* Top Micro Utility Bar */}
-        <div className="bg-slate-900 text-slate-300 py-2 px-4 text-xs border-b border-slate-800">
+        <div className="bg-slate-900 text-slate-300 py-1.5 px-4 text-xs border-b border-slate-800">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1.5 font-bold text-emerald-400 font-mono">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-                <span>LIVE 24/7 AUTO-PIPELINE SCANNER</span>
+              <span className="flex items-center gap-1.5 font-bold text-emerald-400 font-mono text-[11px]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span>LIVE 24/7 FACT-CHECKED NEWS</span>
               </span>
               <span className="text-slate-700">|</span>
-              <span className="hidden sm:inline text-slate-400">{currentDate}</span>
+              <span className="hidden sm:inline text-slate-400 text-[11px]">{currentDate}</span>
             </div>
 
             <div className="flex items-center gap-4 text-[11px] font-medium text-slate-400">
@@ -60,33 +60,33 @@ export const Navbar = () => {
               <span className="hidden md:inline text-slate-700">|</span>
               <Link href="/editorial-standards" className="hover:text-white transition-colors flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-                <span>Editorial Code</span>
+                <span>Editorial Standards</span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Main Publication High-Impact Masthead Logo Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-100">
+        {/* Main Masthead Logo Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-100">
           {/* Left Emblem & Journal Title */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-600 via-indigo-600 to-slate-900 flex items-center justify-center shadow-md text-white shrink-0 ring-4 ring-sky-50">
-              <Radio className="w-6 h-6 text-sky-300 animate-pulse" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shrink-0 shadow-xs">
+              <Radio className="w-5 h-5 text-sky-400" />
             </div>
 
             <Link href="/" className="group">
               <div className="flex items-center gap-2">
-                <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 group-hover:text-sky-700 transition-colors uppercase">
+                <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tight text-slate-900 group-hover:text-sky-700 transition-colors uppercase">
                   World Bulletin
                 </h1>
-                <span className="bg-sky-100 text-sky-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md font-mono uppercase tracking-wider hidden sm:inline">
+                <span className="bg-sky-50 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider hidden sm:inline border border-sky-200">
                   Verified Edition
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-sans tracking-widest uppercase mt-0.5 font-semibold flex items-center gap-2">
-                <span>Fact-Checked Artificial Intelligence Journal</span>
+              <p className="text-[11px] text-slate-500 font-sans uppercase font-medium flex items-center gap-2">
+                <span>Artificial Intelligence Journalism</span>
                 <span className="text-slate-300">•</span>
-                <span className="text-emerald-700 font-mono text-[11px]">3x Daily Pipeline</span>
+                <span className="text-emerald-700 font-mono text-[10px] font-bold">Multi-Source Fact Checked</span>
               </p>
             </Link>
           </div>
@@ -95,15 +95,15 @@ export const Navbar = () => {
           <div className="flex items-center gap-3 w-full md:w-auto justify-end">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex-1 md:flex-none flex items-center justify-between gap-4 px-4 py-2.5 rounded-2xl border border-slate-200 hover:border-sky-400 bg-slate-50/80 hover:bg-sky-50/60 transition-all font-sans text-xs text-slate-600 shadow-2xs group cursor-pointer"
+              className="flex-1 md:flex-none flex items-center justify-between gap-4 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-sky-400 bg-slate-50 hover:bg-white transition-all font-sans text-xs text-slate-600 shadow-2xs group cursor-pointer"
             >
-              <div className="flex items-center gap-2.5">
-                <Search className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-2">
+                <Search className="w-3.5 h-3.5 text-sky-600 group-hover:scale-105 transition-transform" />
                 <span className="font-medium text-slate-500 group-hover:text-slate-900">
                   Search news, benchmarks & LLMs...
                 </span>
               </div>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-mono font-bold text-slate-400 bg-white rounded border border-slate-200 shadow-2xs">
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-400 bg-white rounded border border-slate-200">
                 ⌘K
               </kbd>
             </button>
@@ -111,28 +111,28 @@ export const Navbar = () => {
             {/* Mobile Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 text-slate-700 hover:text-slate-900 rounded-2xl border border-slate-200 bg-slate-50 shrink-0"
+              className="lg:hidden p-2 text-slate-700 hover:text-slate-900 rounded-xl border border-slate-200 bg-slate-50 shrink-0"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Primary Sticky Category Navigation Pill Bar */}
-        <div className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-md">
+        <div className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 shadow-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center justify-start lg:justify-center gap-2 py-3 overflow-x-auto no-scrollbar font-sans">
+            <nav className="flex items-center justify-start lg:justify-center gap-1.5 py-2.5 overflow-x-auto no-scrollbar font-sans">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                       link.match
-                        ? 'bg-sky-500 text-slate-950 shadow-md shadow-sky-500/20 font-heading'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5 font-heading'
+                        ? 'bg-sky-500 text-slate-950 font-heading shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800 font-heading'
                     }`}
                   >
                     <Icon className={`w-3.5 h-3.5 ${link.match ? 'text-slate-950' : 'text-slate-400'}`} />
@@ -146,7 +146,7 @@ export const Navbar = () => {
 
         {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-2 font-sans shadow-xl">
+          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-2 font-sans shadow-lg">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (

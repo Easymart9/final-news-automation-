@@ -7,7 +7,7 @@ interface AdsterraNativeBannerProps {
   label?: string;
 }
 
-export function AdsterraNativeBanner({ className = '', label = 'Sponsored Intelligence & Recommendations' }: AdsterraNativeBannerProps) {
+export function AdsterraNativeBanner({ className = '', label = 'Sponsored Stories & Recommendations' }: AdsterraNativeBannerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function AdsterraNativeBanner({ className = '', label = 'Sponsored Intell
 
     const containerDiv = document.createElement('div');
     containerDiv.id = 'container-2b5c851ccb60002fe95637d183b9d26a';
-    containerDiv.className = 'w-full flex justify-center min-h-[120px]';
+    containerDiv.className = 'w-full min-h-[120px] flex justify-center items-center';
     containerRef.current.appendChild(containerDiv);
 
     const script = document.createElement('script');
@@ -29,20 +29,17 @@ export function AdsterraNativeBanner({ className = '', label = 'Sponsored Intell
   }, []);
 
   return (
-    <div className={`w-full my-8 bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-xs overflow-hidden ${className}`}>
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
-          <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 font-heading">
-            {label}
-          </span>
-        </div>
-        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 uppercase">
-          Promoted
+    <div className={`w-full my-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs overflow-hidden ${className}`}>
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-800 font-heading">
+          {label}
+        </span>
+        <span className="text-[10px] font-mono font-semibold bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200 uppercase">
+          Sponsored
         </span>
       </div>
       
-      <div ref={containerRef} className="w-full min-h-[140px] flex items-center justify-center overflow-hidden" />
+      <div ref={containerRef} className="w-full min-h-[120px] flex items-center justify-center" />
     </div>
   );
 }

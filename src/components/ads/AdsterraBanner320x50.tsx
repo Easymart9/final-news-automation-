@@ -1,46 +1,51 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 interface AdsterraBannerProps {
   className?: string;
 }
 
 export function AdsterraBanner320x50({ className = '' }: AdsterraBannerProps) {
-  const bannerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!bannerRef.current) return;
-    bannerRef.current.innerHTML = '';
-
-    const atOptions = {
-      key: '237e6102b6fa1b6b90ebce3b1c7095e0',
-      format: 'iframe',
-      height: 50,
-      width: 320,
-      params: {}
+  const adHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: transparent; overflow: hidden; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <script type="text/javascript">
+    atOptions = {
+      'key' : '237e6102b6fa1b6b90ebce3b1c7095e0',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
     };
-
-    const conf = document.createElement('script');
-    conf.type = 'text/javascript';
-    conf.innerHTML = `atOptions = ${JSON.stringify(atOptions)};`;
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://www.highrevenueformat.com/237e6102b6fa1b6b90ebce3b1c7095e0/invoke.js';
-    script.async = true;
-
-    bannerRef.current.appendChild(conf);
-    bannerRef.current.appendChild(script);
-  }, []);
+  </script>
+  <script type="text/javascript" src="https://www.highrevenueformat.com/237e6102b6fa1b6b90ebce3b1c7095e0/invoke.js"></script>
+</body>
+</html>`;
 
   return (
-    <div className={`flex flex-col items-center justify-center my-3 overflow-hidden w-full ${className}`}>
-      <span className="text-[9px] uppercase tracking-widest text-slate-400 font-mono mb-1">Advertisement</span>
-      <div 
-        ref={bannerRef} 
-        className="w-full max-w-[320px] min-h-[50px] flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200/60 p-1 shadow-2xs overflow-hidden" 
-      />
+    <div className={`flex flex-col items-center justify-center my-2 w-full ${className}`}>
+      <span className="text-[10px] uppercase tracking-widest text-slate-400 font-mono mb-1 select-none">
+        Advertisement
+      </span>
+      <div className="w-[320px] h-[50px] max-w-full flex items-center justify-center bg-slate-50 border border-slate-200 rounded overflow-hidden">
+        <iframe
+          title="Adsterra 320x50 Banner"
+          srcDoc={adHtml}
+          width="320"
+          height="50"
+          scrolling="no"
+          style={{ border: 'none', width: '320px', height: '50px', overflow: 'hidden' }}
+        />
+      </div>
     </div>
   );
 }
