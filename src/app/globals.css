@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* System Font fallbacks are used natively for instant rendering and maximum FCP speed */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', "Segoe UI", sans-serif;
+  --font-serif: 'Merriweather', Georgia, Cambria, serif;
+}
+
+html, body {
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Classic Newspaper & Editorial Headlines */
+.font-headline {
+  font-family: var(--font-serif);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Editorial Card & Border Rules */
+.news-border-b {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.news-border-r {
+  border-right: 1px solid #e2e8f0;
+}
+
+.news-card {
+  background-color: #ffffff;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.news-card:hover .news-title {
+  color: #0284c7;
+}
+
+/* Clean Editorial Article Reader Body */
+.article-body {
+  font-family: var(--font-serif);
+  color: #1e293b;
+  font-size: 1.125rem;
+  line-height: 1.85;
+}
+
+.article-body p {
+  margin-bottom: 1.5rem;
+}
+
+.article-body h2 {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.article-body h3 {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0369a1;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-body ul {
+  font-family: var(--font-sans);
+  margin-bottom: 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.article-body li {
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.article-body blockquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  border-left: 3px solid #0284c7;
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  color: #334155;
+  font-size: 1.15rem;
+  line-height: 1.75;
+}
+
+/* Custom Clean Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Premium Visual Design Accents */
+.grid-overlay {
+  background-image: linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.premium-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glow-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glow-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.08), 
+              0 0 0 1px rgba(14, 165, 233, 0.15);
+}
+
+.glow-card-subtle {
+  transition: all 0.3s ease;
+}
+
+.glow-card-subtle:hover {
+  box-shadow: 0 8px 24px -8px rgba(15, 23, 42, 0.05),
+              0 0 0 1px rgba(148, 163, 184, 0.15);
+}
