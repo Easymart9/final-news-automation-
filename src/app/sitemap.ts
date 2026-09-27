@@ -1,12 +1,15 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://worldbulletin.world';
+  
+  // Fetch all articles without limits to ensure full indexing
   const articles = db.getArticles(undefined, undefined, true);
   const topics = db.getTopics();
+  const authors = db.getAuthors ? db.getAuthors() : [];
 
-  const routes: MetadataRoute.Sitemap = [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -45,23 +48,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  topics.forEach((t) => {
-    routes.push({
-      url: `${baseUrl}/topics/${t.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    });
-  });
+  const topicRoutes: MetadataRoute.Sitemap = topics.map((t) => ({
+    url: `${baseUrl}/topics/${t.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }));
 
-  articles.forEach((a) => {
-    routes.push({
-      url: `${baseUrl}/news/${a.slug}`,
-      lastModified: new Date(a.updatedAt),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    });
-  });
+  const authorRoutes: MetadataRoute.Sitemap = authors.map((a: any) => ({
+    url: `${baseUrl}/authors/${a.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
 
-  return routes;
+  const articleRoutes: MetadataRoute.Sitemap = articles.map((a) => ({
+    url: `${baseUrl}/news/${a.slug}`,
+    lastModified: a.updatedAt ? new Date(a.updatedAt) : new Date(),
+    changeFrequency: 'daily',
+    priority: 0.9,
+  }));
+
+  // Combine all routes into a single sitemap array
+  return [...staticRoutes, ...topicRoutes, ...authorRoutes, ...articleRoutes];
 }
