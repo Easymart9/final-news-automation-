@@ -14,35 +14,40 @@ import { AdsterraResponsiveBanner, AdsterraNativeBanner, AdsterraSidebarAd } fro
 export const dynamic = 'force-dynamic';
 
 interface ArticlePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const article = db.getArticleBySlug(params.slug);
+  const resolvedParams = await params;
+  const article = db.getArticleBySlug(resolvedParams.slug);
   if (!article) return {};
+
+  const canonicalUrl = `https://worldbulletin.world/news/${article.slug}`;
 
   return {
     title: `${article.title} | World Bulletin`,
     description: article.metaDescription,
     keywords: article.keywords,
     alternates: {
-      canonical: `https://worldbulletin.world/news/${article.slug}`
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: article.title,
       description: article.metaDescription,
+      url: canonicalUrl,
       type: 'article',
       publishedTime: article.publishedAt,
       authors: [article.author.name],
-      images: [{ url: article.featuredImage, width: 1200, height: 630, alt: article.title }]
-    }
+      images: [{ url: article.featuredImage, width: 1200, height: 630, alt: article.title }],
+    },
   };
 }
 
-export default function ArticlePage({ params }: ArticlePageProps) {
-  const article = db.getArticleBySlug(params.slug);
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const resolvedParams = await params;
+  const article = db.getArticleBySlug(resolvedParams.slug);
 
   if (!article) {
     notFound();
@@ -53,12 +58,12 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: 'https://worldbulletin.world' },
     { name: article.category, url: `https://worldbulletin.world/topics/${article.topicSlug}` },
-    { name: article.title, url: `https://worldbulletin.world/news/${article.slug}` }
+    { name: article.title, url: `https://worldbulletin.world/news/${article.slug}` },
   ]);
 
   // Related articles (Only query verified ones)
   const relatedArticles = db.getArticles(undefined, article.topicSlug, true)
-    .filter(a => a.id !== article.id)
+    .filter((a) => a.id !== article.id)
     .slice(0, 3);
 
   return (
@@ -97,7 +102,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         <AdsterraResponsiveBanner />
       </div>
 
-      {/* ARTICLE HEADER (Clean Editorial White Box) */}
+      {/* ARTICLE HEADER */}
       <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 news-border-b">
         <div className="max-w-4xl space-y-4">
           <div className="flex flex-wrap items-center gap-3 text-xs font-semibold">
@@ -163,12 +168,11 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </header>
 
-      {/* MAIN CONTENT GRID (8 Columns Body / 4 Columns Sticky Sidebar) */}
+      {/* MAIN CONTENT GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Main Content Column (8 Cols) */}
+          {/* Main Content Column */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Primary Hero Photographic Asset */}
             <div className="relative h-[320px] sm:h-[460px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
               <Image
                 src={article.featuredImage}
@@ -185,7 +189,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               )}
             </div>
 
-            {/* Clean Article Content Container */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xs space-y-6">
               {(() => {
                 const parts = article.content.split(/(?=<h2>)/i);
@@ -199,12 +202,9 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                         className="article-body font-serif text-lg text-slate-800 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: firstHalf }}
                       />
-                      
-                      {/* Mid-Article Responsive Advertisement */}
                       <div className="my-8 py-3 px-2 border-y border-slate-200 bg-slate-50 rounded-xl">
                         <AdsterraResponsiveBanner />
                       </div>
-
                       <div 
                         className="article-body font-serif text-lg text-slate-800 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: secondHalf }}
@@ -221,10 +221,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               })()}
             </div>
 
-            {/* Native Banner Ad below article content */}
             <AdsterraNativeBanner label="Sponsored Research & Relevant Technical Stories" />
 
-            {/* Frequently Asked Questions (FAQ) Section */}
             {article.faq && article.faq.length > 0 && (
               <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-4">
                 <h3 className="text-lg font-bold font-headline text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
@@ -245,14 +243,12 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </div>
             )}
 
-            {/* Footnote Journalistic Citation Box */}
             <VerificationBadge
               score={article.trustScore}
               status={article.verificationStatus}
               sources={article.sources}
             />
 
-            {/* Keywords Tag Cloud */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 font-heading">
                 <Tag className="w-4 h-4 text-sky-700" />
@@ -268,9 +264,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             </div>
           </div>
 
-          {/* Sticky Sidebar Column (4 Cols) */}
+          {/* Sticky Sidebar Column */}
           <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
-            {/* Share Desk */}
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex items-center justify-between gap-4">
               <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-heading">
                 Share this report
@@ -278,7 +273,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               <ShareButtons title={article.title} slug={article.slug} />
             </div>
 
-            {/* Verification Registry Telemetry Card */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-900 uppercase tracking-wider font-heading border-b border-slate-100 pb-3">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -300,7 +294,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </div>
             </div>
 
-            {/* Academic EEAT Author Card */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 font-heading">
                 Assigned Reporter
@@ -308,10 +301,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               <AuthorCard author={article.author} />
             </div>
 
-            {/* Sidebar Ad Unit */}
             <AdsterraSidebarAd />
 
-            {/* Editorial Standard Stamp */}
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
               <h4 className="text-xs font-bold text-slate-900 font-heading flex items-center gap-1.5 uppercase tracking-wider">
                 <Scale className="w-4 h-4 text-sky-700" />
@@ -326,7 +317,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </Link>
             </div>
 
-            {/* Related Stories Stream */}
             {relatedArticles.length > 0 && (
               <div className="space-y-4 pt-4 border-t border-slate-200">
                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 font-heading">
