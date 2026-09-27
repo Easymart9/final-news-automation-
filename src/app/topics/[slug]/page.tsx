@@ -5,35 +5,47 @@ import { db } from '@/lib/db';
 import { ArticleCard } from '@/components/ArticleCard';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { AdsterraResponsiveBanner, AdsterraNativeBanner } from '@/components/ads';
-
 import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
 interface TopicPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams?: {
+  }>;
+  searchParams?: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const topic = db.getTopicBySlug(params.slug);
+  const resolvedParams = await params;
+  const topic = db.getTopicBySlug(resolvedParams.slug);
   if (!topic) return {};
+  
+  const canonicalUrl = `https://worldbulletin.world/topics/${topic.slug}`;
+
   return {
     title: `${topic.name} | World Bulletin Editorial Desk`,
     description: topic.description,
     alternates: {
-      canonical: `https://worldbulletin.world/topics/${topic.slug}`
-    }
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${topic.name} | World Bulletin`,
+      description: topic.description,
+      url: canonicalUrl,
+      type: 'website',
+    },
   };
 }
 
-export default function TopicPage({ params, searchParams }: TopicPageProps) {
-  const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10));
-  const topic = db.getTopicBySlug(params.slug);
+export default async function TopicPage({ params, searchParams }: TopicPageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  
+  const currentPage = Math.max(1, parseInt(resolvedSearchParams?.page || '1', 10));
+  const topic = db.getTopicBySlug(resolvedParams.slug);
 
   if (!topic) {
     notFound();
@@ -90,7 +102,7 @@ export default function TopicPage({ params, searchParams }: TopicPageProps) {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-3">
             <h2 className="font-heading font-extrabold text-lg text-slate-900">
-              Published Reporting ({articles.length} Stories)
+              Published Reporting ({totalArticlesCount} Stories)
             </h2>
             <span className="text-xs text-slate-500 font-mono">Sorted by recency</span>
           </div>
