@@ -80,13 +80,13 @@ export const Navbar = () => {
                   World Bulletin
                 </h1>
                 <span className="bg-sky-50 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider hidden sm:inline border border-sky-200">
-                  Verified Edition
+                  AI-Assisted Edition
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 font-sans uppercase font-medium flex items-center gap-2">
                 <span>Artificial Intelligence Journalism</span>
                 <span className="text-slate-300">•</span>
-                <span className="text-emerald-700 font-mono text-[10px] font-bold">Multi-Source Fact Checked</span>
+                <span className="text-emerald-700 font-mono text-[10px] font-bold">AI-Assisted Reporting</span>
               </p>
             </Link>
           </div>

@@ -4,7 +4,10 @@ import { ShieldCheck, CheckCircle2, AlertTriangle, Cpu, FileText, ArrowLeft, Boo
 
 export const metadata = {
   title: 'Editorial Standards & Fact Verification Policy | World Bulletin',
-  description: 'Our journalistic code of ethics, multi-source claim verification standards, and automated fact-checking protocols.',
+  description: 'How World Bulletin attributes sources, uses automated checks, and handles unverified stories and corrections.',
+  alternates: {
+    canonical: 'https://worldbulletin.world/editorial-standards',
+  },
 };
 
 export default function EditorialStandardsPage() {
@@ -28,7 +31,7 @@ export default function EditorialStandardsPage() {
           </h1>
 
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-sans">
-            World Bulletin operates under a strict, multi-source verification protocol. Every story published across our desks is verified against peer-reviewed preprints, official lab announcements, and technical repositories before release.
+            World Bulletin uses automated checks against the source page linked to each story when that page is accessible. Automated checks can miss errors and do not constitute independent multi-source or human editorial verification.
           </p>
         </div>
       </section>
@@ -42,10 +45,10 @@ export default function EditorialStandardsPage() {
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <h3 className="text-base font-extrabold text-slate-900 font-heading">
-              1. Multi-Source Peer Verification
+              1. Source Attribution
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Every factual assertion must be confirmed by at least two independent primary sources (e.g., ArXiv preprints, MIT CSAIL, IEEE proceedings, or official corporate disclosures) prior to automated publication.
+              Published articles list the source references used by the pipeline. A listed source is not proof of independent corroboration; readers should consult the linked material for context.
             </p>
           </div>
 
@@ -57,7 +60,7 @@ export default function EditorialStandardsPage() {
               2. 80% Minimum Confidence Threshold
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Articles scoring below an 80% confidence index during multi-agent claim evaluation are automatically diverted to our <strong className="text-slate-800">Admin Review Queue</strong> for manual editor inspection.
+              Automatic publication requires a successful provider response, at least one supported claim, and a score of 80 or higher. Stories that fail or cannot be checked are not automatically published; no human-review workflow is currently guaranteed.
             </p>
           </div>
 
@@ -66,10 +69,10 @@ export default function EditorialStandardsPage() {
               <Cpu className="w-5 h-5" />
             </div>
             <h3 className="text-base font-extrabold text-slate-900 font-heading">
-              3. Zero Synthetic Hallucination Guarantee
+              3. Corrections and Limitations
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              We employ real-time claim cross-referencing to eliminate hallucinated benchmark scores, fictitious model names, or unverified claims in published articles.
+              Automated generation and verification can make mistakes. We do not guarantee that all errors are detected; readers should check cited sources and contact the editorial team to report corrections.
             </p>
           </div>
 
@@ -78,10 +81,10 @@ export default function EditorialStandardsPage() {
               <FileText className="w-5 h-5" />
             </div>
             <h3 className="text-base font-extrabold text-slate-900 font-heading">
-              4. Google News & Schema Compliance
+              4. Structured Data
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              All stories are formatted with structured JSON-LD <code className="text-purple-700 bg-purple-50 px-1 py-0.5 rounded font-mono">NewsArticle</code> metadata, HD featured images (1200px+), and real author attributions.
+              Article pages emit <code className="text-purple-700 bg-purple-50 px-1 py-0.5 rounded font-mono">NewsArticle</code> metadata with the article&apos;s source references and an AI-assisted editorial-desk attribution. Structured data does not guarantee Google News inclusion or search visibility.
             </p>
           </div>
         </div>

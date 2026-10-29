@@ -45,17 +45,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, featured = fa
           </p>
 
           <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full overflow-hidden relative shrink-0 border border-slate-200">
-                <Image
-                  src={article.author.avatar}
-                  alt={article.author.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <span className="font-semibold text-slate-900">{article.author.name}</span>
-            </div>
+            <span className="font-semibold text-slate-900">AI-assisted editorial desk</span>
 
             <ShareButtons title={article.title} slug={article.slug} />
           </div>
@@ -96,7 +86,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, featured = fa
       </div>
 
       <div className="pt-3 mt-4 flex items-center justify-between text-[11px] text-slate-500 font-sans border-t border-slate-100">
-        <span className="font-semibold text-slate-800">{article.author.name}</span>
+        <span className="font-semibold text-slate-800">AI-assisted editorial desk</span>
         <ShareButtons title={article.title} slug={article.slug} />
       </div>
     </div>

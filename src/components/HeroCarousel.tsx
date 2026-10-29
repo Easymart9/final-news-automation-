@@ -64,7 +64,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ articles }) => {
             </span>
             <span className="bg-emerald-600 text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider font-mono flex items-center gap-1">
               <ShieldCheck className="w-3 h-3 text-white" />
-              Verified
+              {currentStory.verificationStatus === 'VERIFIED' ? 'Automated Check Passed' : 'Review Required'}
             </span>
           </div>
 
@@ -95,14 +95,9 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ articles }) => {
                 <Sparkles className="w-3.5 h-3.5 text-sky-600" />
                 <span className="font-bold text-sky-700 uppercase tracking-wider">Spotlight Story</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                <span>{currentStory.readTimeMinutes} min read</span>
-              </div>
             </div>
-
             <Link href={`/news/${currentStory.slug}`}>
-              <h2 className="font-headline text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight hover:text-sky-700 transition-colors line-clamp-3">
+              <h2 className="font-headline text-2xl lg:text-3xl font-black text-slate-900 leading-tight hover:text-sky-700 transition-colors">
                 {currentStory.title}
               </h2>
             </Link>
@@ -115,15 +110,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ articles }) => {
           <div className="space-y-4 pt-3 border-t border-slate-100">
             {/* Author Attribution & Action */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full overflow-hidden relative border border-slate-200 shrink-0">
-                  <Image src={currentStory.author.avatar} alt={currentStory.author.name} fill className="object-cover" />
-                </div>
-                <div>
-                  <p className="font-bold text-slate-900 font-heading text-xs">{currentStory.author.name}</p>
-                  <p className="text-[11px] text-slate-500">{currentStory.author.role}</p>
-                </div>
-              </div>
+              <p className="font-bold text-slate-900 font-heading text-xs">AI-assisted editorial desk</p>
 
               <Link
                 href={`/news/${currentStory.slug}`}

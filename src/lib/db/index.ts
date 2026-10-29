@@ -22,27 +22,23 @@ interface DatabaseSchema {
 const DEFAULT_AUTHORS: Author[] = [
   {
     id: 'auth-1',
-    name: 'Elena Rostova (AI Editorial Bot)',
-    slug: 'elena-rostova',
-    role: 'AI Editorial Assistant (Automated System)',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-    bio: 'An automated artificial intelligence research persona trained on fact-checking protocols and research preprints. This is an AI-assisted agent publishing under the supervision of the editorial team.',
-    credentials: ['AI-Assisted Synthesis', 'Fact Verification Pipeline'],
+    name: 'World Bulletin Editorial Desk (AI-assisted)',
+    slug: 'editorial-desk',
+    role: 'Automated editorial system',
+    avatar: '',
+    bio: 'This system byline does not represent an individual human author. Articles require independent editorial review before being described as human-verified.',
+    credentials: [],
     verifiedCount: 0,
-    twitter: 'https://twitter.com/ai_news_elena',
-    linkedin: 'https://linkedin.com/in/ai-news-elena'
   },
   {
     id: 'auth-2',
-    name: 'Marcus Vance (AI Tech Analyst Bot)',
-    slug: 'marcus-vance',
-    role: 'AI Technical Analyst (Automated System)',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    bio: 'An automated artificial intelligence agent specialized in parsing silicon architectures, specs, and datacenter telemetry. All outputs are verified by the editorial desk.',
-    credentials: ['Automated Spec Parser', 'AI-Generated Infrastructure News'],
+    name: 'World Bulletin Technology Desk (AI-assisted)',
+    slug: 'technology-desk',
+    role: 'Automated editorial system',
+    avatar: '',
+    bio: 'This system byline does not represent an individual human author. Articles require independent editorial review before being described as human-verified.',
+    credentials: [],
     verifiedCount: 0,
-    twitter: 'https://twitter.com/ai_news_marcus',
-    linkedin: 'https://linkedin.com/in/ai-news-marcus'
   }
 ];
 
@@ -119,94 +115,62 @@ function ensureDbExists(): DatabaseSchema {
         totalArticles: DEFAULT_ARTICLES.length,
         verifiedArticles: DEFAULT_ARTICLES.filter(a => a.verificationStatus === 'VERIFIED').length,
         needsReviewArticles: 0,
-        avgTrustScore: 96,
-        dailyAutomations: 3,
-        totalViews: 15460,
-        lastRunTimestamp: new Date().toISOString(),
-        groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'FALLBACK_ACTIVE',
-        adminPassword: 'admin123',
-        lastCronRunTimestamp: new Date().toISOString(),
-        cronScheduleEnabled: true
+        avgTrustScore: 0,
+        dailyAutomations: 0,
+        totalViews: 0,
+        lastRunTimestamp: '',
+        groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'NOT_CONFIGURED',
+        adminPassword: process.env.ADMIN_PASSWORD || '',
+        cronScheduleEnabled: false
       }
     };
     writeDb(initialData);
     return initialData;
   }
 
-  try {
-    const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-    const parsed = JSON.parse(fileContent) as DatabaseSchema;
-    let modified = false;
-
-    if (!parsed.articles || parsed.articles.length < 5) {
-      parsed.articles = DEFAULT_ARTICLES;
-      modified = true;
-    }
-    if (!parsed.authors) {
-      parsed.authors = DEFAULT_AUTHORS;
-      modified = true;
-    }
-    if (!parsed.topics) {
-      parsed.topics = DEFAULT_TOPICS;
-      modified = true;
-    }
-    if (!parsed.verificationLogs) {
-      parsed.verificationLogs = DEFAULT_VERIFICATION_LOGS;
-      modified = true;
-    }
-    if (!parsed.automationLogs) {
-      parsed.automationLogs = DEFAULT_AUTOMATION_LOGS;
-      modified = true;
-    }
-    if (!parsed.stats) {
-      parsed.stats = {
-        totalArticles: parsed.articles.length,
-        verifiedArticles: parsed.articles.filter(a => a.verificationStatus === 'VERIFIED').length,
-        needsReviewArticles: 0,
-        avgTrustScore: 96,
-        dailyAutomations: 3,
-        totalViews: 15460,
-        lastRunTimestamp: new Date().toISOString(),
-        groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'FALLBACK_ACTIVE',
-        adminPassword: 'admin123',
-        lastCronRunTimestamp: new Date().toISOString(),
-        cronScheduleEnabled: true
-      };
-      modified = true;
-    }
-    if (!parsed.stats.adminPassword) {
-      parsed.stats.adminPassword = 'admin123';
-      modified = true;
-    }
-
-    if (modified) {
-      writeDb(parsed);
-    }
-    return parsed;
-  } catch {
-    const fallback: DatabaseSchema = {
-      articles: DEFAULT_ARTICLES,
-      authors: DEFAULT_AUTHORS,
-      topics: DEFAULT_TOPICS,
-      verificationLogs: DEFAULT_VERIFICATION_LOGS,
-      automationLogs: DEFAULT_AUTOMATION_LOGS,
-      stats: {
-        totalArticles: DEFAULT_ARTICLES.length,
-        verifiedArticles: DEFAULT_ARTICLES.filter(a => a.verificationStatus === 'VERIFIED').length,
-        needsReviewArticles: 0,
-        avgTrustScore: 96,
-        dailyAutomations: 3,
-        totalViews: 15460,
-        lastRunTimestamp: new Date().toISOString(),
-        groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'FALLBACK_ACTIVE',
-        adminPassword: 'admin123',
-        lastCronRunTimestamp: new Date().toISOString(),
-        cronScheduleEnabled: true
-      }
-    };
-    writeDb(fallback);
-    return fallback;
+  const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
+  const parsed = JSON.parse(fileContent) as DatabaseSchema;
+  if (!parsed || !Array.isArray(parsed.articles)) {
+    throw new Error('Article database has an invalid schema; refusing to overwrite it.');
   }
+  let modified = false;
+
+  if (!parsed.authors) {
+    parsed.authors = DEFAULT_AUTHORS;
+    modified = true;
+  }
+  if (!parsed.topics) {
+    parsed.topics = DEFAULT_TOPICS;
+    modified = true;
+  }
+  if (!parsed.verificationLogs) {
+    parsed.verificationLogs = DEFAULT_VERIFICATION_LOGS;
+    modified = true;
+  }
+  if (!parsed.automationLogs) {
+    parsed.automationLogs = DEFAULT_AUTOMATION_LOGS;
+    modified = true;
+  }
+  if (!parsed.stats) {
+    parsed.stats = {
+      totalArticles: parsed.articles.length,
+      verifiedArticles: parsed.articles.filter(a => a.verificationStatus === 'VERIFIED').length,
+      needsReviewArticles: 0,
+      avgTrustScore: 0,
+      dailyAutomations: 0,
+      totalViews: 0,
+      lastRunTimestamp: '',
+      groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'NOT_CONFIGURED',
+      adminPassword: process.env.ADMIN_PASSWORD || '',
+      cronScheduleEnabled: false
+    };
+    modified = true;
+  }
+
+  if (modified) {
+    writeDb(parsed);
+  }
+  return parsed;
 }
 
 export function writeDb(data: DatabaseSchema): void {
@@ -241,6 +205,18 @@ export const db = {
     const data = ensureDbExists();
     const targetSlug = decodeURIComponent(slug).toLowerCase();
     return data.articles.find(a => a.slug.toLowerCase() === targetSlug);
+  },
+
+  getPublishedArticleBySlug: (slug: string): Article | undefined => {
+    const data = ensureDbExists();
+    const targetSlug = decodeURIComponent(slug).toLowerCase();
+    return data.articles.find(a => {
+      const publishedAt = Date.parse(a.publishedAt);
+      return a.slug.toLowerCase() === targetSlug &&
+        a.verificationStatus === 'VERIFIED' &&
+        Number.isFinite(publishedAt) &&
+        publishedAt <= Date.now();
+    });
   },
 
   getArticleById: (id: string): Article | undefined => {

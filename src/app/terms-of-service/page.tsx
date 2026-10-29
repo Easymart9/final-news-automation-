@@ -50,7 +50,7 @@ export default function TermsOfServicePage() {
           <section className="space-y-3">
             <h2 className="text-xl font-bold font-headline text-slate-900">3. Fact-Checking & Content Disclaimer</h2>
             <p>
-              While World Bulletin applies automated and human-reviewed multi-source cross-verification protocols, technical articles are provided for informational and educational purposes only. Technical benchmark numbers and research outcomes should be independently verified before making enterprise or legal decisions.
+              World Bulletin uses automated checks against linked source pages when available. These checks are fallible and are not a substitute for independent or human editorial review. Articles are provided for informational and educational purposes; verify technical claims with the cited sources before relying on them.
             </p>
           </section>
 

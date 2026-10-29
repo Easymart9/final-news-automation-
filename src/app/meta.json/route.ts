@@ -6,7 +6,7 @@ export async function GET() {
   return NextResponse.json({
     name: 'World Bulletin',
     url: 'https://worldbulletin.world',
-    description: 'Fact-Checked Automated AI Journalism',
+    description: 'AI-assisted technology news with linked source references',
     version: '1.0.0',
     status: 'active'
   }, {

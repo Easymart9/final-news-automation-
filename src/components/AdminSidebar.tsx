@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Zap, FileText, ShieldCheck, ListOrdered, ArrowLeft, Activity, LogOut, CheckCircle2, Lock, KeyRound } from 'lucide-react';
+import { LayoutDashboard, Zap, FileText, ShieldCheck, ListOrdered, ArrowLeft, Activity, LogOut, Lock, KeyRound } from 'lucide-react';
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
@@ -70,11 +70,11 @@ export const AdminSidebar = () => {
         <div className="bg-[#0b0f19] p-3 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1 font-mono">
           <div className="flex items-center justify-between font-semibold">
             <span>Groq LLM Engine:</span>
-            <span className="text-emerald-400 font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Active
+            <span className="text-slate-400 font-bold">
+              Server config
             </span>
           </div>
-          <p className="text-[10px] text-slate-400">3x Daily Scheduled Cron</p>
+          <p className="text-[10px] text-slate-400">Pipeline runs on demand</p>
         </div>
 
         <div className="flex items-center justify-between gap-2 pt-1">

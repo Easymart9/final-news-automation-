@@ -3,30 +3,34 @@ const path = require('path');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'db.json');
 
+if (process.env.NODE_ENV === 'production') {
+  throw new Error('Database rebuilds are disabled in production.');
+}
+
+if (fs.existsSync(DB_PATH) && process.env.ALLOW_DESTRUCTIVE_DB_REBUILD !== 'true') {
+  throw new Error('Refusing to overwrite data/db.json. Set ALLOW_DESTRUCTIVE_DB_REBUILD=true for an intentional local rebuild.');
+}
+
 const AUTHORS = [
   {
     id: 'auth-1',
-    name: 'Elena Rostova',
-    slug: 'elena-rostova',
-    role: 'Lead AI Research & Foundation Models Editor',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-    bio: 'Senior technology journalist specializing in foundational transformer architectures, reasoning benchmarks, and open-weights AI ecosystems. Former ML researcher with over 8 years of technical reporting experience.',
-    credentials: ['M.S. in Computer Science', 'IEEE Associate Member', 'Former NLP Research Fellow'],
-    verifiedCount: 1420,
-    twitter: 'https://twitter.com/elena_rostova_ai',
-    linkedin: 'https://linkedin.com/in/elena-rostova-tech'
+    name: 'World Bulletin Editorial Desk (AI-assisted)',
+    slug: 'editorial-desk',
+    role: 'Automated editorial system',
+    avatar: '',
+    bio: 'System byline for automated publishing. This profile does not represent a human journalist or claim personal credentials.',
+    credentials: [],
+    verifiedCount: 0
   },
   {
     id: 'auth-2',
-    name: 'Marcus Vance',
-    slug: 'marcus-vance',
-    role: 'Silicon Systems & Hardware Infrastructure Analyst',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    bio: 'Hardware systems architect and datacenter analyst covering custom ASICs, wafer-scale tensor processors, optical interconnects, and hyperscale energy efficiency.',
-    credentials: ['B.S. in Electrical Engineering', 'Semiconductor Industry Analyst', 'Datacenter Specialist'],
-    verifiedCount: 1180,
-    twitter: 'https://twitter.com/marcus_vance_chips',
-    linkedin: 'https://linkedin.com/in/marcus-vance-ai'
+    name: 'World Bulletin Technology Desk (AI-assisted)',
+    slug: 'technology-desk',
+    role: 'Automated editorial system',
+    avatar: '',
+    bio: 'System byline for automated publishing. This profile does not represent a human journalist or claim personal credentials.',
+    credentials: [],
+    verifiedCount: 0
   }
 ];
 
@@ -844,8 +848,8 @@ RAW_ARTICLES_DATA.forEach((raw, idx) => {
     metaDescription: raw.metaDescription,
     category: raw.category,
     topicSlug: raw.topicSlug,
-    trustScore: raw.trustScore,
-    verificationStatus: 'VERIFIED',
+    trustScore: 0,
+    verificationStatus: 'NEEDS_REVIEW',
     featuredImage: image,
     imageCaption: `${raw.category} technical analysis briefing and verified research report.`,
     author: author,
@@ -858,18 +862,11 @@ RAW_ARTICLES_DATA.forEach((raw, idx) => {
         verified: true,
         publishedDate: publishedTime
       },
-      {
-        id: `src-2-${idx}`,
-        sourceName: 'World Bulletin Cross-Verification Index',
-        sourceUrl: raw.sourceUrl,
-        claim: 'Factual consistency confirmed with technical preprints and primary documentation.',
-        verified: true
-      }
     ],
     publishedAt: publishedTime,
     updatedAt: publishedTime,
     readTimeMinutes: Math.max(4, Math.ceil(raw.content.split(' ').length / 200)),
-    views: 120 + (idx * 37),
+    views: 0,
     isFeatured: idx < 3,
     keywords: raw.keywords,
     faq: raw.faq
@@ -893,39 +890,38 @@ const cleanDb = {
     id: `vlog-${Date.now()}-${i}`,
     articleId: a.id,
     claim: a.title,
-    status: 'VERIFIED',
-    score: a.trustScore,
-    sourcesChecked: 3,
-    matchingSources: 3,
-    hallucinationRisk: 'LOW',
+    status: 'NEEDS_REVIEW',
+    score: 0,
+    sourcesChecked: 1,
+    matchingSources: 0,
+    hallucinationRisk: 'HIGH',
     checkedAt: a.publishedAt,
-    notes: `Verified against primary documentation from ${a.sources[0].sourceName}. Zero hallucination risk detected.`
+    notes: `Seeded content is not verified by this script. Review the cited source and claims before any publication.`
   })),
   automationLogs: [
     {
       id: `log-init-${Date.now()}`,
-      taskName: 'Automated Multi-Feed Ingestion & Factual Synthesis',
+      taskName: 'Guarded Local Database Rebuild',
       status: 'SUCCESS',
       durationMs: 342,
-      details: `Cleaned and rebuilt database with ${newArticles.length} authentic, fully fact-checked AI journalism articles across all 5 coverage desks. Every article assigned a unique high-resolution image.`,
+      details: `Destructive local rebuild created ${newArticles.length} seeded stories in the review queue. This script does not verify claims or publish articles.`,
       timestamp: new Date().toISOString()
     }
   ],
   stats: {
     totalArticles: newArticles.length,
-    verifiedArticles: newArticles.length,
-    needsReviewArticles: 0,
-    avgTrustScore: 97,
-    dailyAutomations: 3,
-    totalViews: newArticles.reduce((sum, a) => sum + a.views, 0),
-    lastRunTimestamp: new Date().toISOString(),
-    groqApiStatus: 'CONNECTED',
-    adminPassword: 'admin123',
-    lastCronRunTimestamp: new Date().toISOString(),
-    cronScheduleEnabled: true
+    verifiedArticles: 0,
+    needsReviewArticles: newArticles.length,
+    avgTrustScore: 0,
+    dailyAutomations: 0,
+    totalViews: 0,
+    lastRunTimestamp: '',
+    groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'NOT_CONFIGURED',
+    adminPassword: process.env.ADMIN_PASSWORD || '',
+    cronScheduleEnabled: false
   }
 };
 
 fs.writeFileSync(DB_PATH, JSON.stringify(cleanDb, null, 2), 'utf-8');
-console.log(`Successfully written ${newArticles.length} pristine articles to db.json with unique images!`);
+console.log(`Created ${newArticles.length} review-only seeded records in db.json.`);
 console.log('Topic distribution:', updatedTopics.map(t => `${t.name}: ${t.articleCount}`));

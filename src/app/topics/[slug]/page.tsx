@@ -18,16 +18,26 @@ interface TopicPageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: TopicPageProps): Promise<Metadata> {
   const resolvedParams = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const topic = db.getTopicBySlug(resolvedParams.slug);
   if (!topic) return {};
-  
-  const canonicalUrl = `https://worldbulletin.world/topics/${topic.slug}`;
+
+  const pageValue = Number(resolvedSearchParams.page || '1');
+  const currentPage = Number.isInteger(pageValue) && pageValue > 0 ? pageValue : 1;
+  const articles = db.getArticles(undefined, topic.slug, true);
+  const totalPages = Math.ceil(articles.length / 12);
+  const topicUrl = `https://worldbulletin.world/topics/${topic.slug}`;
+  const canonicalUrl = currentPage > 1 ? `${topicUrl}?page=${currentPage}` : topicUrl;
 
   return {
     title: `${topic.name} | World Bulletin Editorial Desk`,
     description: topic.description,
+    robots: {
+      index: articles.length > 0 && currentPage <= totalPages,
+      follow: true,
+    },
     alternates: {
       canonical: canonicalUrl,
     },
@@ -44,7 +54,11 @@ export default async function TopicPage({ params, searchParams }: TopicPageProps
   const resolvedParams = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
   
-  const currentPage = Math.max(1, parseInt(resolvedSearchParams?.page || '1', 10));
+  const pageValue = Number(resolvedSearchParams?.page || '1');
+  if (!Number.isInteger(pageValue) || pageValue < 1) {
+    notFound();
+  }
+  const currentPage = pageValue;
   const topic = db.getTopicBySlug(resolvedParams.slug);
 
   if (!topic) {
@@ -55,6 +69,9 @@ export default async function TopicPage({ params, searchParams }: TopicPageProps
   const itemsPerPage = 12;
   const totalArticlesCount = allArticles.length;
   const totalPages = Math.ceil(totalArticlesCount / itemsPerPage);
+  if (totalPages > 0 && currentPage > totalPages) {
+    notFound();
+  }
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const articles = allArticles.slice(startIndex, startIndex + itemsPerPage);

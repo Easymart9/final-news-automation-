@@ -1,26 +1,43 @@
 import { NextResponse } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
 import { runScheduledNewsAutomationPipeline } from '@/lib/automation/pipeline';
+import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+function isAuthorizedCronRequest(request: Request): boolean {
+  const secret = process.env.CRON_SECRET;
+  const token = request.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+  if (!secret || secret.length < 32 || !token) return false;
+
+  const expected = Buffer.from(secret);
+  const provided = Buffer.from(token);
+  return expected.length === provided.length && timingSafeEqual(expected, provided);
+}
+
+export async function GET(request: Request) {
+  if (!isAuthorizedCronRequest(request)) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    // 25 articles per day split across 3 daily cron runs:
-    // Run 1: 9 articles, Run 2: 8 articles, Run 3: 8 articles = 25 articles.
-    const currentHour = new Date().getHours();
-    let batchLimit = 8;
-    if (currentHour >= 0 && currentHour < 8) {
-      batchLimit = 9; // First batch gets 9 to make total 25
-    }
-    
+    const batchLimit = 8;
     const result = await runScheduledNewsAutomationPipeline(batchLimit);
     return NextResponse.json({
       success: true,
-      schedule: '3x Daily Cron (0 0,8,16 * * *) - Targeting 25 articles/day total',
+      batchLimit,
       message: result.logMessage,
       result
     });
   } catch (error: any) {
+    db.addAutomationLog({
+      id: `log-cron-failure-${Date.now()}`,
+      taskName: 'Scheduled News Pipeline Request',
+      status: 'FAILED',
+      durationMs: 0,
+      details: 'The scheduled publishing pipeline failed. Check restricted server logs for the error.',
+      timestamp: new Date().toISOString()
+    });
     return NextResponse.json(
       { success: false, message: error?.message || 'Cron execution failed' },
       { status: 500 }
@@ -28,6 +45,6 @@ export async function GET() {
   }
 }
 
-export async function POST() {
-  return GET();
+export async function POST(request: Request) {
+  return GET(request);
 }

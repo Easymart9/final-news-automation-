@@ -1,6 +1,7 @@
 import React from 'react';
 import { cookies } from 'next/headers';
 import { AdminSidebar } from '@/components/AdminSidebar';
+import { getAdminSessionToken } from '@/lib/admin-session';
 
 export default function AdminLayout({
   children,
@@ -9,7 +10,8 @@ export default function AdminLayout({
 }) {
   const cookieStore = cookies();
   const token = cookieStore.get('admin_session_token');
-  const isAuthenticated = token?.value === 'authenticated_admin_token_active';
+  const sessionToken = getAdminSessionToken();
+  const isAuthenticated = Boolean(sessionToken && token?.value === sessionToken);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">

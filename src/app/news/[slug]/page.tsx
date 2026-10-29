@@ -21,7 +21,7 @@ interface ArticlePageProps {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const article = db.getArticleBySlug(resolvedParams.slug);
+  const article = db.getPublishedArticleBySlug(resolvedParams.slug);
   if (!article) return {};
 
   const canonicalUrl = `https://worldbulletin.world/news/${article.slug}`;
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       url: canonicalUrl,
       type: 'article',
       publishedTime: article.publishedAt,
-      authors: [article.author.name],
+      authors: ['World Bulletin Editorial Desk (AI-assisted)'],
       images: [{ url: article.featuredImage, width: 1200, height: 630, alt: article.title }],
     },
   };
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const resolvedParams = await params;
-  const article = db.getArticleBySlug(resolvedParams.slug);
+  const article = db.getPublishedArticleBySlug(resolvedParams.slug);
 
   if (!article) {
     notFound();
@@ -124,7 +124,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </span>
             <span className="text-slate-300">•</span>
             <span className="text-emerald-700 font-mono font-bold flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Fact Checked
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {article.verificationStatus === 'VERIFIED' ? 'Automated Check Passed' : 'Review Required'}
             </span>
           </div>
 
@@ -145,20 +145,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Author Info & Share Bar */}
           <div className="pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden relative border border-slate-200 shrink-0">
-                <Image
-                  src={article.author.avatar}
-                  alt={article.author.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <p className="font-bold text-slate-900 font-heading text-xs">{article.author.name}</p>
-                <p className="text-[11px] text-slate-500">{article.author.role}</p>
-              </div>
-            </div>
+            <p className="font-bold text-slate-900 font-heading text-xs">World Bulletin Editorial Desk (AI-assisted)</p>
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-heading hidden sm:inline">Share:</span>
@@ -285,11 +272,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <span className="text-slate-500">Primary Source:</span>
-                  <span className="text-sky-700 font-bold truncate max-w-[150px]">{article.sources[0]?.sourceName || 'Verified Outlets'}</span>
+                  <span className="text-sky-700 font-bold truncate max-w-[150px]">{article.sources[0]?.sourceName || 'Source not listed'}</span>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                  <span className="text-slate-500">Audit Type:</span>
-                  <span className="text-slate-700 font-bold">Multi-Source Fact Check</span>
+                  <span className="text-slate-500">Check status:</span>
+                  <span className="text-slate-700 font-bold">{article.verificationStatus} (automated)</span>
                 </div>
               </div>
             </div>

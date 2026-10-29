@@ -187,13 +187,13 @@ export default function AdminDashboardPage() {
 
             <div className="space-y-2.5 text-xs font-mono">
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-slate-600 font-medium">Groq LLM Engine:</span>
-                <span className="font-bold text-emerald-600">Active (Llama 3.3)</span>
+                <span className="text-slate-600 font-medium">Groq API key:</span>
+                <span className="font-bold text-slate-700">{process.env.GROQ_API_KEY ? 'Configured; health not checked' : 'Not configured'}</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                 <span className="text-slate-600 font-medium">Fact Verifier:</span>
-                <span className="font-bold text-sky-700">Multi-Source Cross</span>
+                <span className="font-bold text-sky-700">Automated source-page check</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200">

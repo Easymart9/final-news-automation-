@@ -19,7 +19,7 @@ A production-grade, automated artificial intelligence news publication built wit
 
 ## ⚡ How News Automation Works
 
-The platform includes an end-to-end automated news generation and fact-checking engine accessible from the Admin Panel (`/admin/automation`) or via background API calls (`/api/automation/run`).
+The platform includes an RSS research and news generation pipeline accessible from the Admin Panel (`/admin/automation`) or via authenticated background requests (`/api/automation/run`). A daily schedule must be configured in the deployment provider; this repository does not include one.
 
 ```
 ┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
@@ -37,25 +37,25 @@ The platform includes an end-to-end automated news generation and fact-checking 
 ### Step-by-Step Execution Flow:
 1. **Ingestion & Research**: The parser fetches real-time RSS feeds from ArXiv (`cs.AI`), MIT CSAIL, and TechCrunch, identifying trending topics in LLMs, AI Chips, Autonomous Agents, Safety, and Robotics.
 2. **Groq LLM Generation**: Sends research prompts to the Groq Cloud API (`llama-3.3-70b-versatile`) to generate a complete, structured journalistic article with valid HTML body markup.
-3. **Multi-Source Fact Verification**: The verifier extracts empirical claims (*e.g., "94.2% accuracy on quantum mechanics benchmarks"*) and cross-references them against source URLs, assigning a Trust Score (0–100%).
+3. **Source Verification**: The verifier checks the source page against the headline and snippet. Stories that cannot be checked are held for review; a single source is not independent multi-source verification.
 4. **Confidence Threshold & Review Queue**:
    - **Trust Score ≥ 80%**: Marked as `VERIFIED` and published directly to the public homepage feed.
    - **Trust Score < 80%**: Marked as `NEEDS_REVIEW` and held in the **Admin Article Review Queue** for manual approval.
 5. **Atomic Database Swap**: Writes the new article to a `.tmp` file and performs an atomic `fs.renameSync` swap to update `data/db.json` without data corruption.
 
 ### 📊 How Many News Articles Are Generated Per Pipeline Run?
-- **Standard Pipeline Execution**: Each single trigger of the pipeline fetches and generates **1 to 3 verified high-priority stories** per run.
-- **Batch Automation Runs**: Configurable up to **10+ stories per batch execution** during scheduled cron runs.
+- **Per-run limit**: The scheduled route processes at most 8 feed items per request. This is not a daily publishing target; actual counts depend on valid fresh feeds, verification, generation, and duplicate checks.
 
 ---
 
 ## 🔐 Admin Panel Credentials & Password Protection
 
-Access to the Admin Panel (`/admin/*`) is strictly isolated behind server-side HTTP-Only session authentication. The Admin Panel link and automation trigger buttons do **NOT** appear anywhere on the public website.
+Access to the Admin Panel (`/admin/*`) is protected by an HTTP-Only session cookie. Configure a unique `ADMIN_PASSWORD` and a random `ADMIN_SESSION_TOKEN` (at least 32 characters) before production deployment. There is no production default password or session token.
 
 - **Admin Login Route**: [`http://localhost:3000/admin/login`](http://localhost:3000/admin/login)
-- **Default Username**: `admin` *(or `admin@ainews.org`)*
-- **Default Password**: `admin123`
+- **Username**: `admin`
+- **Manual Pipeline Trigger**: Requires an authenticated admin session.
+- **Scheduled Pipeline Trigger**: `/api/cron/run` requires an `Authorization: Bearer <CRON_SECRET>` header. Configure `CRON_SECRET` in the deployment environment and in the scheduler.
 
 ---
 
@@ -173,9 +173,11 @@ Create a `.env.local` file in the root directory to enable live Groq Cloud API c
 
 ```env
 GROQ_API_KEY=your_groq_api_key_here
-ADMIN_PASSWORD=admin123
+ADMIN_PASSWORD=replace-with-a-unique-password
+ADMIN_SESSION_TOKEN=your-random-32-character-or-longer-session-token
+CRON_SECRET=your-random-32-character-or-longer-cron-secret
 ```
-*Note: If `GROQ_API_KEY` is not provided, the platform automatically uses built-in high-quality fallback seed models.*
+*Note: Without `GROQ_API_KEY`, new stories remain unpublished. RSS failures, inconclusive checks, incomplete articles, short articles, and missing source links fail closed rather than generating placeholder reporting.*
 
 ---
 

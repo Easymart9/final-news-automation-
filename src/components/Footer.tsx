@@ -13,11 +13,11 @@ export const Footer = () => {
               World Bulletin
             </h3>
             <p className="text-slate-400 text-xs leading-relaxed max-w-md">
-              An independent technical news platform providing peer-verified reporting on artificial intelligence research, foundation models, silicon hardware, and global safety standards.
+              An AI-assisted technology news site linking to external reporting and research. Automated summaries can contain errors and should be checked against their sources.
             </p>
             <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-mono font-semibold pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Multi-Source Fact Verification Active</span>
+              <span>Source references shown on stories</span>
             </div>
           </div>
 

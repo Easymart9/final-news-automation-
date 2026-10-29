@@ -38,7 +38,7 @@ export const ShareButtons: React.FC<ShareButtonsProps> = ({ title, url, slug }) 
       try {
         await navigator.share({
           title,
-          text: `Check out this verified AI report: ${title}`,
+          text: `Check out this AI-assisted technology report: ${title}`,
           url: articleUrl,
         });
       } catch {

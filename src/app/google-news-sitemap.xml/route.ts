@@ -10,10 +10,10 @@ export async function GET() {
   const twoDaysAgo = now - 48 * 60 * 60 * 1000;
 
   // Google News Sitemap strictly requires articles published in the last 48 hours
-  let newsArticles = allVerified.filter(a => new Date(a.publishedAt).getTime() >= twoDaysAgo);
-  if (newsArticles.length === 0) {
-    newsArticles = allVerified.slice(0, 30); // fallback to latest 30
-  }
+  const newsArticles = allVerified.filter(a => {
+    const publishedAt = new Date(a.publishedAt).getTime();
+    return publishedAt >= twoDaysAgo && publishedAt <= now;
+  });
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"

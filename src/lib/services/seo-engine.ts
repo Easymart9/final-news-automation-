@@ -2,9 +2,6 @@ import { Article } from '@/types';
 
 export function generateNewsArticleSchema(article: Article, baseUrl: string = 'https://worldbulletin.world') {
   const articleUrl = `${baseUrl}/news/${article.slug}`;
-  const authorName = article.author?.name || 'World Bulletin Editorial Desk';
-  const authorRole = article.author?.role || 'Staff Journalist';
-  const authorSlug = article.author?.slug || 'editorial-desk';
   const keywordsList = Array.isArray(article.keywords) ? article.keywords.join(', ') : (article.keywords || 'AI News');
   const citationList = Array.isArray(article.sources) ? article.sources.map(s => s.sourceUrl).filter(Boolean) : [];
 
@@ -21,10 +18,9 @@ export function generateNewsArticleSchema(article: Article, baseUrl: string = 'h
     'datePublished': article.publishedAt,
     'dateModified': article.updatedAt || article.publishedAt,
     'author': {
-      '@type': 'Person',
-      'name': authorName,
-      'jobTitle': authorRole,
-      'url': `${baseUrl}/authors/${authorSlug}`
+      '@type': 'Organization',
+      'name': 'World Bulletin Editorial Desk (AI-assisted)',
+      'url': `${baseUrl}/about`
     },
     'publisher': {
       '@type': 'Organization',

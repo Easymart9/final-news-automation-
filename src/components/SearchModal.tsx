@@ -126,7 +126,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
           {results.length === 0 ? (
             <div className="text-center py-10 space-y-2">
               <p className="text-sm font-bold text-slate-700 font-heading">No matching news articles found</p>
-              <p className="text-xs text-slate-400">Try searching for terms like "Quantum", "Silicon", "SWE-bench", or "Robotics".</p>
+              <p className="text-xs text-slate-400">Try searching for terms like &quot;Quantum&quot;, &quot;Silicon&quot;, &quot;SWE-bench&quot;, or &quot;Robotics&quot;.</p>
             </div>
           ) : (
             results.map((art) => (
@@ -143,7 +143,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                     </span>
                     <span className="text-slate-400">•</span>
                     <span className="text-emerald-700 font-bold flex items-center gap-0.5">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> Verified
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> {art.verificationStatus === 'VERIFIED' ? 'Automated Check Passed' : 'Review Required'}
                     </span>
                   </div>
 

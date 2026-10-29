@@ -87,5 +87,5 @@ export interface SystemStats {
   dailyAutomations: number;
   totalViews: number;
   lastRunTimestamp: string;
-  groqApiStatus: 'CONNECTED' | 'FALLBACK_ACTIVE';
+  groqApiStatus: 'CONNECTED' | 'FALLBACK_ACTIVE' | 'NOT_CONFIGURED';
 }

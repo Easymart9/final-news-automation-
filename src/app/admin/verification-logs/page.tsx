@@ -19,13 +19,13 @@ export default function VerificationLogsPage() {
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <div className="flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider mb-1 font-heading">
           <FileSearch className="w-4 h-4 text-sky-600" />
-          <span>Multi-Source Claim Audit Trail</span>
+          <span>Automated Claim Check Logs</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
           Fact-Verification Audit & Hallucination Logs
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Detailed log of every factual claim evaluated across academic databases, lab announcements, and multi-source RSS feeds.
+          Logs record automated checks against linked source pages. They do not establish independent corroboration or human review.
         </p>
       </div>
 

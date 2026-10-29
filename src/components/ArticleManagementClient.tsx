@@ -343,7 +343,7 @@ export default function ArticleManagementClient({ initialArticles }: ArticleMana
                     >
                       {src.sourceUrl}
                     </a>
-                    {src.claim && <p className="text-slate-500 italic text-[11px]">Claim: "{src.claim}"</p>}
+                    {src.claim && <p className="text-slate-500 italic text-[11px]">Claim: &quot;{src.claim}&quot;</p>}
                   </div>
                 ))}
               </div>

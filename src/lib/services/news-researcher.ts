@@ -55,6 +55,7 @@ const RSS_FEEDS = [
 export async function discoverTrendingAINews(): Promise<{
   items: RawNewsItem[];
   sourceCount: number;
+  failedSources: string[];
 }> {
   const parser = new Parser({
     timeout: 8000,
@@ -66,6 +67,7 @@ export async function discoverTrendingAINews(): Promise<{
 
   const fetchedItems: RawNewsItem[] = [];
   const successfulSources = new Set<string>();
+  const failedSources: string[] = [];
 
   for (const feedConfig of RSS_FEEDS) {
     try {
@@ -89,6 +91,10 @@ export async function discoverTrendingAINews(): Promise<{
           : null;
 
         if (!parsedPubDate || !Number.isFinite(parsedPubDate.getTime())) {
+          return;
+        }
+        const ageMs = Date.now() - parsedPubDate.getTime();
+        if (ageMs < 0 || ageMs > 48 * 60 * 60 * 1000) {
           return;
         }
 
@@ -195,6 +201,7 @@ export async function discoverTrendingAINews(): Promise<{
         `RSS feed failed: ${feedConfig.name}`,
         error instanceof Error ? error.message : error
       );
+      failedSources.push(feedConfig.name);
 
       // Continue with the remaining feeds.
     }
@@ -211,6 +218,7 @@ export async function discoverTrendingAINews(): Promise<{
 
   return {
     items: finalItems,
-    sourceCount: successfulSources.size
+    sourceCount: successfulSources.size,
+    failedSources
   };
 }

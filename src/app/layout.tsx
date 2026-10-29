@@ -5,8 +5,8 @@ import { PublicShell } from '@/components/PublicShell';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'World Bulletin | Fact-Checked Automated AI Journalism',
-  description: 'World Bulletin (worldbulletin.world) is an automated worldwide artificial intelligence news platform. Multi-source fact verification, automated claim extraction, and verified editorial standards.',
+  title: 'World Bulletin | AI-Assisted Technology News',
+  description: 'World Bulletin publishes AI-assisted technology news with linked source references and automated checks that may be fallible.',
   keywords: [
     'World Bulletin',
     'worldbulletin.world',
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     'google-adsense-account': 'ca-pub-1941031216214407'
   },
   openGraph: {
-    title: 'World Bulletin | Fact-Checked Automated AI Journalism',
-    description: 'World Bulletin is an automated worldwide artificial intelligence news platform.',
+    title: 'World Bulletin | AI-Assisted Technology News',
+    description: 'AI-assisted technology news with linked source references.',
     type: 'website',
     url: 'https://worldbulletin.world',
   },

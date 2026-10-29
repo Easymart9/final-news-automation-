@@ -114,17 +114,17 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
 
                 <div className="space-y-2">
                   <h3 className="font-heading font-extrabold text-sm uppercase tracking-wider text-sky-400">
-                    Verification Standard
+                    Automated Source Checks
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                    Every article published by World Bulletin undergoes multi-source claims validation against peer-reviewed ArXiv preprints, technical repositories, and official benchmark releases.
+                    The pipeline checks story claims against a linked source page when available. This automated check is fallible and is not independent multi-source or human editorial verification.
                   </p>
                 </div>
 
                 <div className="space-y-2 text-xs font-mono pt-3 border-t border-slate-800">
                   <div className="flex items-center justify-between text-slate-300">
-                    <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Fact Confidence:</span>
-                    <strong className="text-white">80% Minimum</strong>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Auto-publish gate:</span>
+                    <strong className="text-white">80% when configured</strong>
                   </div>
                   <div className="flex items-center justify-between text-slate-300">
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Primary Sources:</span>
@@ -333,15 +333,15 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
               <div className="space-y-2.5 text-xs font-mono">
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <span className="text-slate-600">Verification Rate:</span>
-                  <span className="text-emerald-700 font-bold">Fact-Checked & Verified</span>
+                  <span className="text-emerald-700 font-bold">Automated checks vary</span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <span className="text-slate-600">Scan Pipeline:</span>
-                  <span className="text-sky-700 font-bold">3x Daily Automated</span>
+                  <span className="text-sky-700 font-bold">On-Demand</span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <span className="text-slate-600">Hallucination Guard:</span>
-                  <span className="text-emerald-700 font-bold">Multi-Source Cross</span>
+                  <span className="text-emerald-700 font-bold">Source-linked review</span>
                 </div>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
                 <span>Journalistic Standards</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                Articles published on World Bulletin strictly adhere to multi-source verification and claim validation.
+                Stories include source references and may receive automated source-page checks. Those checks do not replace independent review.
               </p>
               <Link href="/editorial-standards" className="text-sky-700 font-bold hover:underline block pt-1 font-heading">
                 Read Ethics & Standards Policy →

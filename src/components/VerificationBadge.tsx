@@ -27,10 +27,10 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({ score, sta
 
           <div>
             <h4 className="font-bold text-slate-900 font-heading text-xs uppercase tracking-wider">
-              Reporting Sources & Fact Check Reference
+              Source Attribution & Automated Check
             </h4>
             <p className="text-slate-600 text-xs mt-0.5">
-              Verified against {safeSources.length} independent technical sources (Factual Integrity Audited)
+              {safeSources.length} source reference(s) are listed. Automated result: {status} ({score}% model confidence); this is not independent verification.
             </p>
           </div>
         </div>

@@ -44,7 +44,7 @@ export default function AboutPage() {
               Founded in 2026, <strong>World Bulletin</strong> (<a href="https://worldbulletin.world" className="text-sky-700 font-semibold hover:underline">worldbulletin.world</a>) was established to address the rapid rise of unverified speculation and AI-generated hype in mainstream technology media.
             </p>
             <p>
-              Our editorial desk synthesizes peer-reviewed research papers (arXiv, Nature Machine Intelligence), open-source repository releases, lab announcements, and international regulatory frameworks into authoritative, fact-checked briefings.
+              Our automated workflow summarizes technology reporting and research with linked source references. Articles should be independently checked against those sources; this system does not claim human reporting or review.
             </p>
           </div>
         </div>
@@ -55,9 +55,9 @@ export default function AboutPage() {
             <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold">
               <Scale className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold font-heading text-slate-900">Multi-Source Verification</h3>
+            <h3 className="text-base font-bold font-heading text-slate-900">Source Checks</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Every factual claim is cross-referenced against primary research documentation, code repositories, or official corporate dispatches prior to publication.
+              The automated pipeline compares story claims with the linked source page when accessible. This check is fallible and does not replace independent editorial review.
             </p>
           </div>
 
@@ -65,9 +65,9 @@ export default function AboutPage() {
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
               <Award className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold font-heading text-slate-900">Zero Speculation</h3>
+            <h3 className="text-base font-bold font-heading text-slate-900">Accuracy Limitations</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              We do not invent statistics, benchmarks, or synthetic quotes. If technical metrics are unverified, our desk explicitly flags them in the report registry.
+              Automated generation may introduce unsupported details or errors. Check the linked source material and report corrections; no automated process guarantees that every claim is accurate.
             </p>
           </div>
 
@@ -75,9 +75,9 @@ export default function AboutPage() {
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold">
               <Users className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold font-heading text-slate-900">Author Accountability</h3>
+            <h3 className="text-base font-bold font-heading text-slate-900">System Attribution</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Our reporting staff and domain analysts maintain complete transparency regarding research backgrounds, methodologies, and editorial corrections.
+              Articles are produced through an AI-assisted workflow. The site does not represent generated system bylines as individual journalists or claim unverified personal credentials.
             </p>
           </div>
         </div>

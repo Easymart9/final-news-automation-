@@ -62,37 +62,10 @@ export async function fetchLiveRssFeeds(): Promise<RssItem[]> {
       }
     }
   } catch (err) {
-    console.warn('Live RSS fetch fallback triggered:', err);
+    console.warn('Live RSS fetch failed:', err);
   }
 
-  // Fallback RSS Items for reliable offline execution
-  const nowIso = new Date().toISOString();
-  return [
-    {
-      title: 'Multimodal Transformer Benchmarks Show 40% Reduction in Memory Footprint During Long Context Inference',
-      link: 'https://arxiv.org/abs/2405.09999',
-      pubDate: nowIso,
-      summary: 'Engineers report novel sparse attention quantization techniques allowing 1M context windows to run on single GPU nodes.',
-      category: 'LLMs & Foundation Models',
-      topicSlug: 'llm-foundation-models'
-    },
-    {
-      title: 'Wafer-Scale AI Chips Achieve Record 100 Petaflops Throughput in Energy-Efficient Datacenter Testbed',
-      link: 'https://computer.org/micro/wafer-scale-ai-2026',
-      pubDate: nowIso,
-      summary: 'Next-generation interconnect topology enables wafer-scale tensor processors to scale past 100 Petaflops with zero interconnect latency.',
-      category: 'AI Chips & Infrastructure',
-      topicSlug: 'ai-chips-infrastructure'
-    },
-    {
-      title: 'Self-Correcting Code Generation Agents Outperform Human Benchmarks on Complex Refactoring Tasks',
-      link: 'https://swebench.com/results-latest',
-      pubDate: nowIso,
-      summary: 'Autonomous software engineering agents demonstrate multi-step debugging across large codebase dependency graphs.',
-      category: 'Autonomous AI Agents',
-      topicSlug: 'autonomous-ai-agents'
-    }
-  ];
+  return [];
 }
 
 export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 10) {
@@ -109,6 +82,17 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
   let newPublishedCount = 0;
   let heldInReviewCount = 0;
   let skippedDuplicatesCount = 0;
+
+  for (const failedSource of research.failedSources) {
+    db.addAutomationLog({
+      id: `log-feed-${Date.now()}-${failedSource.replace(/[^a-z0-9]/gi, '-')}`,
+      taskName: 'RSS Feed Request',
+      status: 'WARNING',
+      durationMs: 0,
+      details: `Unable to retrieve a valid feed from ${failedSource}. No synthetic stories were substituted.`,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   for (const item of feedItems) {
     if (processedCount >= maxArticlesToProcess) break;
@@ -129,8 +113,9 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
       skippedDuplicatesCount++;
       continue;
     }
+    processedCount++;
 
-    // 3. Fact verification (Scrapes the real source URL and runs Groq/Keyword analysis)
+    // 3. Fact verification checks the source page with the configured provider.
     const verification = await verifyFactClaims(item);
     const trustScore = verification.trustScore;
     const verificationStatus = verification.status;
@@ -139,14 +124,33 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
     // "No verified source = no publication."
     if (verificationStatus !== 'VERIFIED') {
       heldInReviewCount++;
+      db.addAutomationLog({
+        id: `log-review-${Date.now()}-${processedCount}`,
+        taskName: 'Article Held for Review',
+        status: 'WARNING',
+        durationMs: 0,
+        details: `Verification was inconclusive for "${item.title.slice(0, 100)}". The story was not published.`,
+        timestamp: new Date().toISOString()
+      });
       continue; 
     }
 
     // 4. Generate AI Article purely from verified facts
     const generated = await generateAIArticle(item, verification);
 
+    const generatedTitle = generated.title.trim().toLowerCase();
+    const generatedSlug = generated.slug.trim().toLowerCase();
+    const generatedIsDuplicate = db.getArticles().some(article =>
+      article.slug.toLowerCase() === generatedSlug ||
+      article.title.trim().toLowerCase() === generatedTitle
+    );
+    if (generatedIsDuplicate) {
+      skippedDuplicatesCount++;
+      continue;
+    }
+
     const imageInfo = fetchFeaturedImage(item.category, item.title, item.imageUrl);
-    const author = authors[processedCount % authors.length] || authors[0];
+    const author = authors[newPublishedCount % authors.length] || authors[0];
     const pubDate = new Date().toISOString();
     const topicObj = db.getTopics().find(t => t.name.toLowerCase() === item.category.toLowerCase()) || db.getTopics()[0];
 
@@ -165,7 +169,7 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
       imageCaption: imageInfo.caption,
       author: author,
       sources: verification.sources,
-      publishedAt: pubDate,
+      publishedAt: item.pubDate,
       updatedAt: pubDate,
       readTimeMinutes: generated.readTimeMinutes,
       views: 1,
@@ -182,7 +186,6 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
     db.addVerificationLog(verification.log);
 
     newPublishedCount++;
-    processedCount++;
   }
 
   const durationMs = Date.now() - startTime;
@@ -194,9 +197,9 @@ export async function runScheduledNewsAutomationPipeline(maxArticlesToProcess = 
   const autoLog: AutomationLog = {
     id: `log-cron-${Date.now()}`,
     taskName: 'Automated Scheduled News Pipeline',
-    status: 'SUCCESS',
+    status: research.failedSources.length > 0 || (feedItems.length === 0 && newPublishedCount === 0) || heldInReviewCount > 0 ? 'WARNING' : 'SUCCESS',
     durationMs: durationMs,
-    details: logMessage,
+    details: `${logMessage} RSS feeds failed: ${research.failedSources.length}. Sources responding: ${research.sourceCount}.`,
     timestamp: new Date().toISOString()
   };
   db.addAutomationLog(autoLog);

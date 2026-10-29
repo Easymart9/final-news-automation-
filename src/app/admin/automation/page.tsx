@@ -14,7 +14,7 @@ export default function AutomationPipelinePage() {
   const runPipeline = async () => {
     setIsRunning(true);
     setStatus('running');
-    setLogs(['[00:00:01] 🚀 Initializing 3x Daily Automated AI News Research & Fact Verification Pipeline...']);
+    setLogs(['[00:00:01] Initializing the protected news research and verification pipeline...']);
 
     try {
       setLogs((prev) => [...prev, '[00:00:02] 📡 Scanning configured AI news feeds (TechCrunch AI, ArXiv preprints, MIT CSAIL)...']);
@@ -26,11 +26,9 @@ export default function AutomationPipelinePage() {
       if (data.success) {
         setLogs((prev) => [
           ...prev,
-          `[00:00:04] 🧠 Groq LLM (Llama 3.3 70B) generated newly detected verified stories`,
-          `[00:00:05] 🛡️ Multi-source claim verification completed. Trust Scores assigned (85%-99%)`,
-          `[00:00:06] 📰 Auto-published high-confidence stories to homepage feed`,
-          `[00:00:07] 🗺️ Updated /google-news-sitemap.xml and /sitemap.xml automatically`,
-          `[00:00:08] 💾 Saved atomically to data/db.json with zero data corruption`,
+          `[00:00:04] Provider generation and source checks completed for the returned stories`,
+          `[00:00:05] Published, held, and duplicate counts: ${data.result?.logMessage || data.message}`,
+          `[00:00:06] Sitemap responses are generated from the current database records`,
           `[00:00:09] ✅ ${data.message || 'Pipeline execution completed successfully!'}`
         ]);
         setStatus('success');
@@ -53,13 +51,13 @@ export default function AutomationPipelinePage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider mb-1 font-heading">
             <Clock className="w-4 h-4 text-sky-600" />
-            <span>Automated 3x Daily Scheduled Pipeline</span>
+            <span>On-Demand Pipeline</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
             Automation & Cron Control Console
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Configured to run automatically 3 times per day (Midnight, 8 AM, 4 PM). Processes newly published stories dynamically.
+            Daily scheduling is managed outside this application. This console runs the pipeline only when an authenticated admin starts it.
           </p>
         </div>
 
@@ -77,18 +75,18 @@ export default function AutomationPipelinePage() {
         {/* Pipeline Controls (5 Cols) */}
         <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 space-y-6 shadow-xs">
           <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider font-heading border-b border-slate-100 pb-3">
-            Scheduler Configuration (3x Daily)
+            On-Demand Pipeline Controls
           </h3>
 
           <div className="space-y-4 text-xs font-mono">
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
               <div className="flex items-center justify-between font-bold text-slate-900">
                 <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-sky-600" /> Cron Schedule Interval:
+                  <Clock className="w-3.5 h-3.5 text-sky-600" /> Scheduler:
                 </span>
-                <span className="text-emerald-700 font-bold">3 Times / Day</span>
+                <span className="text-amber-700 font-bold">Not configured here</span>
               </div>
-              <p className="text-[11px] text-slate-500">0 0,8,16 * * * (Midnight, 8:00 AM, 4:00 PM)</p>
+              <p className="text-[11px] text-slate-500">Configure a protected cron job in the hosting provider.</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
@@ -96,7 +94,7 @@ export default function AutomationPipelinePage() {
                 <span className="flex items-center gap-1.5">
                   <Rss className="w-3.5 h-3.5 text-sky-600" /> RSS Ingestion Feeds:
                 </span>
-                <span className="text-emerald-700">Online</span>
+                <span className="text-slate-600">Checked per run</span>
               </div>
               <p className="text-[11px] text-slate-500">TechCrunch AI, ArXiv cs.AI, MIT CSAIL</p>
             </div>
@@ -139,7 +137,7 @@ export default function AutomationPipelinePage() {
             ) : (
               <>
                 <Play className="w-5 h-5 fill-white" />
-                <span>Run Scheduled Pipeline Now</span>
+                <span>Run Pipeline Now</span>
               </>
             )}
           </button>
@@ -158,7 +156,7 @@ export default function AutomationPipelinePage() {
           <div className="h-[340px] overflow-y-auto space-y-2 font-mono text-[11px] leading-relaxed text-slate-300 no-scrollbar">
             {logs.length === 0 ? (
               <p className="text-slate-500 italic">
-                Click "Run Scheduled Pipeline Now" to initiate automated RSS news research, deduplication, fact verification, and sitemap generation...
+                Click &quot;Run Scheduled Pipeline Now&quot; to initiate automated RSS news research, deduplication, fact verification, and sitemap generation...
               </p>
             ) : (
               logs.map((log, index) => (

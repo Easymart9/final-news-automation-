@@ -8,18 +8,6 @@ export interface VerificationResult {
   log: VerificationLog;
 }
 
-const TRUSTED_DOMAINS = [
-  'arxiv.org',
-  'mit.edu',
-  'ieee.org',
-  'techcrunch.com',
-  'venturebeat.com',
-  'technologyreview.com',
-  'github.com',
-  'nature.com',
-  'science.org'
-];
-
 async function fetchWebpageText(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
@@ -65,7 +53,6 @@ export async function verifyFactClaims(newsItem: RawNewsItem): Promise<Verificat
   const pageText = await fetchWebpageText(newsItem.link);
   
   let baseScore = 0;
-  let verifiedClaims: string[] = [];
   let notes = '';
   let status: VerificationStatus = 'NEEDS_REVIEW';
 
@@ -106,67 +93,24 @@ Return pure JSON in this format:
       if (response.ok) {
         const json = await response.json();
         const parsed = JSON.parse(json.choices[0].message.content);
-        baseScore = parsed.confidenceScore || 0;
-        verifiedClaims = parsed.verifiedClaims || [];
-        notes = parsed.notes || '';
-        status = (parsed.verified && baseScore >= 80) ? 'VERIFIED' : 'NEEDS_REVIEW';
+        baseScore = typeof parsed.confidenceScore === 'number' ? parsed.confidenceScore : 0;
+        notes = typeof parsed.notes === 'string' ? parsed.notes : '';
+        const hasVerifiedClaims = Array.isArray(parsed.verifiedClaims) && parsed.verifiedClaims.some(
+          (claim: unknown) => typeof claim === 'string' && claim.trim().length > 0
+        );
+        status = parsed.verified === true && hasVerifiedClaims && baseScore >= 80 ? 'VERIFIED' : 'NEEDS_REVIEW';
       }
     } catch (err) {
-      console.warn("Groq claim verification failed, falling back to keyword logic", err);
+      console.warn("Groq claim verification failed; holding story for review", err);
     }
   }
 
-  // Fallback keyword-matching algorithm if Groq is unavailable or failed
   if (baseScore === 0) {
-    let domain = 'unknown';
-    try {
-      const urlObj = new URL(newsItem.link);
-      domain = urlObj.hostname.replace('www.', '');
-    } catch {}
-
-    const isTrusted = TRUSTED_DOMAINS.includes(domain) || newsItem.source.toLowerCase().includes('tech') || newsItem.source.toLowerCase().includes('mit') || newsItem.source.toLowerCase().includes('arxiv');
-    
-    if (pageText.length > 50) {
-      // Tokenize title keywords (only words > 4 characters)
-      const keywords = newsItem.title.toLowerCase()
-        .replace(/[^\w\s]/g, '')
-        .split(/\s+/)
-        .filter(w => w.length > 4);
-
-      let matchedCount = 0;
-      const lowerPageText = pageText.toLowerCase();
-      keywords.forEach(kw => {
-        if (lowerPageText.includes(kw)) matchedCount++;
-      });
-
-      const matchRatio = keywords.length > 0 ? (matchedCount / keywords.length) : 0;
-
-      if (isTrusted && matchRatio >= 0.3) {
-        // High confidence since it is a trusted source and keywords match
-        baseScore = Math.min(100, Math.round(85 + matchRatio * 15));
-        status = 'VERIFIED';
-        verifiedClaims = [
-          `Factual alignment confirmed on key topics: ${keywords.filter(k => lowerPageText.includes(k)).join(', ')}`,
-          `Primary source published by verified outlet: ${newsItem.source}`
-        ];
-        notes = `Verified via keyword-correlation match (Score: ${baseScore}%). Source verified as authoritative (${newsItem.source}).`;
-      } else if (matchRatio >= 0.5) {
-        baseScore = Math.min(100, Math.round(80 + (matchRatio - 0.5) * 40));
-        status = baseScore >= 80 ? 'VERIFIED' : 'NEEDS_REVIEW';
-        verifiedClaims = [`Factual correlation detected on keywords.`];
-        notes = `Keyword correlation matching: ${matchedCount}/${keywords.length} terms found on primary page.`;
-      } else {
-        baseScore = Math.max(30, Math.round(matchRatio * 100));
-        status = 'NEEDS_REVIEW';
-        notes = `Low factual correlation found. Only ${matchedCount} out of ${keywords.length} title keywords matched on source page.`;
-      }
-    } else {
-      // If we couldn't fetch the webpage text at all, we cannot verify it.
-      // "No verified source = no publication." So set score very low to trigger review/rejection.
-      baseScore = 40;
-      status = 'NEEDS_REVIEW';
-      notes = `Factual verification failed. Primary source page at ${newsItem.link} was unreachable or empty.`;
-    }
+    baseScore = 40;
+    status = 'NEEDS_REVIEW';
+    notes = process.env.GROQ_API_KEY
+      ? `Automated verification was unavailable or inconclusive. The source at ${newsItem.link} requires human review.`
+      : 'GROQ_API_KEY is not configured; automated verification is unavailable and this story requires human review.';
   }
 
   const sources: SourceReference[] = [
@@ -180,25 +124,14 @@ Return pure JSON in this format:
     }
   ];
 
-  // If there are other sources or references verified, show them
-  verifiedClaims.forEach((claim, idx) => {
-    sources.push({
-      id: `src-v${idx + 2}-${Date.now()}`,
-      sourceName: 'Cross-Check Database Index',
-      sourceUrl: newsItem.link,
-      claim: claim,
-      verified: true
-    });
-  });
-
   const log: VerificationLog = {
     id: `vlog-${Date.now()}`,
     articleId: '', // Assigned later
     claim: claimText,
     status,
     score: baseScore,
-    sourcesChecked: 1 + verifiedClaims.length,
-    matchingSources: status === 'VERIFIED' ? (1 + verifiedClaims.length) : 0,
+    sourcesChecked: 1,
+    matchingSources: status === 'VERIFIED' ? 1 : 0,
     hallucinationRisk: status === 'VERIFIED' ? 'LOW' : 'HIGH',
     notes: notes,
     checkedAt: new Date().toISOString()

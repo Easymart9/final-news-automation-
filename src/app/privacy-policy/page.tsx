@@ -55,10 +55,10 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2 text-xs text-slate-600">
               <li>
-                Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to your website or other websites.
+                Third-party vendors, including Google, use cookies to serve ads based on a user&apos;s prior visits to your website or other websites.
               </li>
               <li>
-                Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet.
+                Google&apos;s use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet.
               </li>
               <li>
                 Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-sky-700 font-semibold underline">Google Ads Settings</a>.
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
           {/* Children's Information */}
           <section className="space-y-3">
             <h2 className="text-xl font-bold font-headline text-slate-900">
-              5. Children's Online Privacy Protection
+              5. Children&apos;s Online Privacy Protection
             </h2>
             <p>
               World Bulletin does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you believe that your child has provided this kind of information on our website, we strongly encourage you to contact us immediately, and we will promptly remove such records from our databases.
