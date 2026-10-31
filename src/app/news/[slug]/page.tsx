@@ -6,7 +6,8 @@ import { Metadata } from 'next';
 import { db } from '@/lib/db';
 import { VerificationBadge } from '@/components/VerificationBadge';
 import { AuthorCard } from '@/components/AuthorCard';
-import { generateNewsArticleSchema, generateBreadcrumbSchema } from '@/lib/services/seo-engine';
+import { generateNewsArticleSchema, generateBreadcrumbSchema, serializeJsonLd } from '@/lib/services/seo-engine';
+import { sanitizeArticleContent } from '@/lib/services/content-sanitizer';
 import { ShareButtons } from '@/components/ShareButtons';
 import { Clock, Calendar, ArrowLeft, Tag, ShieldCheck, Scale, CheckCircle2 } from 'lucide-react';
 import { AdsterraResponsiveBanner, AdsterraNativeBanner, AdsterraSidebarAd } from '@/components/ads';
@@ -55,6 +56,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   // SEO Schemas
   const newsSchema = generateNewsArticleSchema(article);
+  const safeArticleContent = sanitizeArticleContent(article.content);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: 'https://worldbulletin.world' },
     { name: article.category, url: `https://worldbulletin.world/topics/${article.topicSlug}` },
@@ -71,11 +73,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       {/* Schema.org JSON-LD Scripts */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(newsSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
 
       {/* Clean Editorial Breadcrumb Header */}
@@ -178,7 +180,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
             <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xs space-y-6">
               {(() => {
-                const parts = article.content.split(/(?=<h2>)/i);
+                const parts = safeArticleContent.split(/(?=<h2>)/i);
                 if (parts.length >= 3) {
                   const mid = Math.ceil(parts.length / 2);
                   const firstHalf = parts.slice(0, mid).join('');
@@ -202,7 +204,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 return (
                   <div 
                     className="article-body font-serif text-lg text-slate-800 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
+                    dangerouslySetInnerHTML={{ __html: safeArticleContent }}
                   />
                 );
               })()}

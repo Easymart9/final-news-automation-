@@ -155,15 +155,8 @@ function hashString(str: string): number {
 export function fetchFeaturedImage(
   category: string,
   titleOrSlug?: string,
-  fallbackImageUrl?: string
-): { imageUrl: string; caption: string } {
-  // If the news source or RSS feed provided a verified image URL, use it!
-  if (fallbackImageUrl && fallbackImageUrl.startsWith('http')) {
-    return {
-      imageUrl: fallbackImageUrl,
-      caption: `Photo and media report citation corresponding to ${category}.`
-    };
-  }
+  previouslyAssignedUrls: Iterable<string> = []
+): { imageUrl: string; caption: string; needsReview: boolean } {
 
   // Normalize category name
   let targetCategory = 'LLMs & Foundation Models';
@@ -180,13 +173,28 @@ export function fetchFeaturedImage(
   }
 
   const options = EXPANDED_IMAGE_POOL[targetCategory] || EXPANDED_IMAGE_POOL['LLMs & Foundation Models'];
-  
-  // Use hash of title/slug for unique deterministic assignment so different articles get different images
-  const index = titleOrSlug ? hashString(titleOrSlug) % options.length : Math.floor(Math.random() * options.length);
-  const choice = options[index];
+  const usedUrls = new Set([...previouslyAssignedUrls].map(normalizeImageUrl));
+  const startIndex = titleOrSlug ? hashString(titleOrSlug) % options.length : 0;
 
-  return {
-    imageUrl: choice.url,
-    caption: choice.caption
-  };
+  for (let offset = 0; offset < options.length; offset++) {
+    const choice = options[(startIndex + offset) % options.length];
+    if (!usedUrls.has(normalizeImageUrl(choice.url))) {
+      return {
+        imageUrl: choice.url,
+        caption: 'Illustrative image',
+        needsReview: false
+      };
+    }
+  }
+
+  return { imageUrl: '', caption: '', needsReview: true };
+}
+
+function normalizeImageUrl(imageUrl: string): string {
+  try {
+    const parsedUrl = new URL(imageUrl);
+    return `${parsedUrl.origin}${parsedUrl.pathname}`;
+  } catch {
+    return imageUrl;
+  }
 }

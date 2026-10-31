@@ -1,5 +1,12 @@
 import { Article } from '@/types';
 
+export function serializeJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
 export function generateNewsArticleSchema(article: Article, baseUrl: string = 'https://worldbulletin.world') {
   const articleUrl = `${baseUrl}/news/${article.slug}`;
   const keywordsList = Array.isArray(article.keywords) ? article.keywords.join(', ') : (article.keywords || 'AI News');

@@ -1,0 +1,35 @@
+name: Scheduled News Automation
+
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: world-bulletin-news-publishing
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Trigger the production publishing pipeline
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [[ -z "$CRON_SECRET" ]]; then
+            echo "Repository secret CRON_SECRET is required."
+            exit 1
+          fi
+
+          curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --retry 3 \
+            --retry-all-errors \
+            --retry-delay 10 \
+            --max-time 600 \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            https://worldbulletin.world/api/cron/run

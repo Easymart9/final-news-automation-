@@ -19,7 +19,9 @@ A production-grade, automated artificial intelligence news publication built wit
 
 ## ⚡ How News Automation Works
 
-The platform includes an RSS research and news generation pipeline accessible from the Admin Panel (`/admin/automation`) or via authenticated background requests (`/api/automation/run`). A daily schedule must be configured in the deployment provider; this repository does not include one.
+The platform includes an RSS research and news generation pipeline accessible from the Admin Panel (`/admin/automation`) or via authenticated background requests (`/api/automation/run`). The GitHub Actions workflow at `.github/workflows/news-automation.yml` calls the production cron endpoint every two hours and can also be started manually from the Actions tab. Scheduled runs require the repository secret `CRON_SECRET` to match the production environment variable. GitHub scheduled workflows can be delayed or disabled by repository inactivity, so monitor workflow runs and configure GitHub failure notifications.
+
+The endpoint processes at most 8 feed items per run. This is a processing limit, not a daily publication guarantee: actual publication depends on fresh RSS items, verification, the Groq API, and duplicate checks. The current source set covers AI and technology rather than all general-news categories. Before relying on automated writes in production, verify that the host provides durable shared storage for `data/db.json`; ephemeral or multi-instance filesystems can lose updates or diverge. No daily article quota, production persistence guarantee, or instant breaking-news publication is claimed.
 
 ```
 ┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐

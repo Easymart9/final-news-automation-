@@ -1,5 +1,6 @@
 import { RawNewsItem } from './news-researcher';
 import { VerificationResult } from './fact-verifier';
+import { sanitizeArticleContent } from './content-sanitizer';
 
 export interface GeneratedArticlePayload {
   title: string;
@@ -111,13 +112,14 @@ Return pure valid JSON.`
     throw new Error('Groq returned an incomplete article; it was not published.');
   }
 
-  const articleText = parsed.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const safeContent = sanitizeArticleContent(parsed.content);
+  const articleText = safeContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   const wordCount = articleText.split(' ').filter(Boolean).length;
   const escapedSourceUrl = newsItem.link.replace(/&/g, '&amp;');
   if (wordCount < 600) {
     throw new Error(`Groq article was too short (${wordCount} words); it was not published.`);
   }
-  if (!parsed.content.includes(newsItem.link) && !parsed.content.includes(escapedSourceUrl)) {
+  if (!safeContent.includes(newsItem.link) && !safeContent.includes(escapedSourceUrl)) {
     throw new Error('Groq article omitted its source link; it was not published.');
   }
   if (!slugify(parsed.title)) {
@@ -127,7 +129,7 @@ Return pure valid JSON.`
   return {
     title: parsed.title,
     slug: slugify(parsed.title),
-    content: parsed.content,
+    content: safeContent,
     summary: parsed.summary,
     metaDescription: typeof parsed.metaDescription === 'string' ? parsed.metaDescription : parsed.summary,
     category: newsItem.category,
