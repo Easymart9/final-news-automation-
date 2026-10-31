@@ -1,5 +1,4 @@
-// Extensive curated high-definition tech & AI photography library from Unsplash
-// Each image is verified to be responsive, copyright-safe, and visually distinct.
+// Curated Unsplash image pool for technology reporting.
 const EXPANDED_IMAGE_POOL: Record<string, Array<{ url: string; caption: string }>> = {
   'LLMs & Foundation Models': [
     {
@@ -9,10 +8,6 @@ const EXPANDED_IMAGE_POOL: Record<string, Array<{ url: string; caption: string }
     {
       url: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80',
       caption: 'Abstract digital data streams representing transformer context window tokens.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Neural processing visualization showing multi-head attention weights across layers.'
     },
     {
       url: 'https://images.unsplash.com/photo-1676299081847-824916de030a?auto=format&fit=crop&w=1200&q=80',
@@ -25,14 +20,6 @@ const EXPANDED_IMAGE_POOL: Record<string, Array<{ url: string; caption: string }
     {
       url: 'https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=1200&q=80',
       caption: 'High-dimensional latent space representation of multimodal token embeddings.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1694829608518-e366050b181e?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Algorithmic probability vectors in generative text completion architecture.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1692607431198-566b6c2cfb37?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Quantum-inspired neural weights optimizing parameter quantization.'
     }
   ],
   'Autonomous AI Agents': [
@@ -45,20 +32,12 @@ const EXPANDED_IMAGE_POOL: Record<string, Array<{ url: string; caption: string }
       caption: 'Encrypted agentic tool execution pipeline with real-time feedback loops.'
     },
     {
-      url: 'https://images.unsplash.com/photo-1516116211227-bbc03714b8a2?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Automated software development agent parsing code syntax and unit tests.'
-    },
-    {
       url: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80',
       caption: 'Autonomous terminal executing containerized microservice refactoring commands.'
     },
     {
       url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
       caption: 'Cybersecurity agent network monitoring anomalous API request payloads.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1526374879895-c2662c1d2e1b?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Distributed multi-agent consensus protocol processing live task queues.'
     },
     {
       url: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80',
@@ -68,10 +47,6 @@ const EXPANDED_IMAGE_POOL: Record<string, Array<{ url: string; caption: string }
   'AI Chips & Infrastructure': [
     {
       url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
-      caption: 'Advanced silicon substrate featuring integrated high-bandwidth memory dies.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
       caption: 'Liquid-cooled enterprise server rack optimized for high-density neural network training.'
     },
     {

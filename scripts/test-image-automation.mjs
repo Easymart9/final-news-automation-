@@ -38,7 +38,7 @@ describe('automated featured-image assignment', () => {
       availableCount++;
     }
 
-    assert.equal(availableCount, 8);
+    assert.equal(availableCount, 5);
   });
 
   it('does not reassign the same source image with different query parameters', () => {
