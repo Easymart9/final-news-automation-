@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { Article, Author, TopicCluster, VerificationLog, AutomationLog, SystemStats } from '@/types';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
+const DB_PATH = process.env.DATABASE_PATH
+  ? path.resolve(process.env.DATABASE_PATH)
+  : path.join(process.cwd(), 'data', 'db.json');
 
 export interface ExtendedSystemStats extends SystemStats {
   adminPassword?: string;
