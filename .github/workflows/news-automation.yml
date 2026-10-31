@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '17 */2 * * *'
   workflow_dispatch:
+    inputs:
+      batch_limit:
+        description: Maximum stories for this manual production test (default 1)
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+        default: '1'
 
 concurrency:
   group: world-bulletin-news-publishing
@@ -17,9 +26,16 @@ jobs:
       - name: Trigger the production publishing pipeline
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          REQUESTED_BATCH_LIMIT: ${{ inputs.batch_limit }}
         run: |
           if [[ -z "$CRON_SECRET" ]]; then
             echo "Repository secret CRON_SECRET is required."
+            exit 1
+          fi
+
+          BATCH_LIMIT="${REQUESTED_BATCH_LIMIT:-3}"
+          if [[ ! "$BATCH_LIMIT" =~ ^[1-3]$ ]]; then
+            echo "Batch limit must be between 1 and 3."
             exit 1
           fi
 
@@ -32,4 +48,4 @@ jobs:
             --retry-delay 10 \
             --max-time 600 \
             --header "Authorization: Bearer ${CRON_SECRET}" \
-            https://worldbulletin.world/api/cron/run
+            "https://worldbulletin.world/api/cron/run?limit=${BATCH_LIMIT}"

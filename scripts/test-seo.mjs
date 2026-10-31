@@ -14,6 +14,7 @@ const db = JSON.parse(await readFile(path.join(root, 'data/db.json'), 'utf8'));
 const article = db.articles.find((item) =>
   item.verificationStatus === 'VERIFIED' && Date.parse(item.publishedAt) <= Date.now()
 );
+const testCronSecret = 'test-secret-for-invalid-limit-route-check-only';
 let serverProcess;
 let origin;
 
@@ -40,6 +41,7 @@ before(async () => {
   serverProcess = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
     cwd: root,
     stdio: 'ignore',
+    env: { ...process.env, CRON_SECRET: testCronSecret },
   });
 
   for (let attempt = 0; attempt < 40; attempt += 1) {
@@ -150,5 +152,12 @@ describe('production SEO responses', () => {
   it('rejects cron requests without a bearer secret', async () => {
     const response = await fetch(`${origin}/api/cron/run`, { method: 'POST' });
     assert.equal(response.status, 401);
+  });
+
+  it('rejects invalid authenticated cron batch limits without running the pipeline', async () => {
+    const response = await fetch(`${origin}/api/cron/run?limit=4`, {
+      headers: { authorization: `Bearer ${testCronSecret}` }
+    });
+    assert.equal(response.status, 400);
   });
 });

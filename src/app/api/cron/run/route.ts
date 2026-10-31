@@ -21,7 +21,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const batchLimit = 3;
+    const requestedLimit = new URL(request.url).searchParams.get('limit');
+    const batchLimit = requestedLimit === null ? 3 : Number(requestedLimit);
+    if (!Number.isInteger(batchLimit) || batchLimit < 1 || batchLimit > 3) {
+      return NextResponse.json({ success: false, message: 'Batch limit must be between 1 and 3.' }, { status: 400 });
+    }
     const result = await runScheduledNewsAutomationPipeline(batchLimit);
     return NextResponse.json({
       success: result.success,
