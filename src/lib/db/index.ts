@@ -90,6 +90,21 @@ const DEFAULT_TOPICS: TopicCluster[] = [
   }
 ];
 
+const BROAD_NEWS_TOPICS: TopicCluster[] = [
+  { id: 'topic-india', name: 'India News', slug: 'india-news', description: 'Reporting on major news, policy, public affairs, and developments across India.', iconName: 'MapPin', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-world', name: 'World News', slug: 'world-news', description: 'Significant international developments and reporting from around the world.', iconName: 'Globe2', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-breaking', name: 'Breaking News', slug: 'breaking-news', description: 'Fresh developing stories labeled breaking only when sources identify them as urgent or developing.', iconName: 'Radio', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-technology-ai', name: 'Technology & AI', slug: 'technology-ai', description: 'Technology, artificial intelligence, digital products, research, and the people shaping the sector.', iconName: 'Cpu', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-business', name: 'Business & Finance', slug: 'business-finance', description: 'Companies, markets, financial policy, and economic developments.', iconName: 'BriefcaseBusiness', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-sports', name: 'Sports', slug: 'sports', description: 'Results, competitions, teams, athletes, and major sporting developments.', iconName: 'Trophy', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-entertainment', name: 'Entertainment & Bollywood', slug: 'entertainment-bollywood', description: 'Film, television, music, and entertainment news, including Indian cinema.', iconName: 'Clapperboard', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-science', name: 'Science & Space', slug: 'science-space', description: 'Research, discoveries, spaceflight, astronomy, and science policy.', iconName: 'Orbit', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-education', name: 'Education & Jobs', slug: 'education-jobs', description: 'Education policy, schools, universities, skills, recruitment, and employment.', iconName: 'GraduationCap', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-health', name: 'Health', slug: 'health', description: 'Public health, medicine, health policy, and evidence-based wellbeing reporting.', iconName: 'HeartPulse', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-government-schemes', name: 'Government Schemes', slug: 'government-schemes', description: 'Verified government programmes, eligibility, benefits, and official updates.', iconName: 'Landmark', searchDemand: 'HIGH', articleCount: 0 },
+  { id: 'topic-assam-northeast', name: 'Assam & Northeast India', slug: 'assam-northeast', description: 'Local and regional reporting from Assam and the Northeast states of India.', iconName: 'Map', searchDemand: 'HIGH', articleCount: 0 }
+];
+
 const now = new Date();
 const todayIso = now.toISOString();
 const hoursAgo = (h: number) => new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
@@ -97,6 +112,22 @@ const hoursAgo = (h: number) => new Date(now.getTime() - h * 60 * 60 * 1000).toI
 const DEFAULT_ARTICLES: Article[] = [];
 const DEFAULT_VERIFICATION_LOGS: VerificationLog[] = [];
 const DEFAULT_AUTOMATION_LOGS: AutomationLog[] = [];
+
+function getTopicList(data: DatabaseSchema): TopicCluster[] {
+  const topicsBySlug = new Map<string, TopicCluster>();
+  for (const topic of [...DEFAULT_TOPICS, ...BROAD_NEWS_TOPICS, ...data.topics]) {
+    topicsBySlug.set(topic.slug.toLowerCase(), topic);
+  }
+
+  const publishedArticles = data.articles.filter(article =>
+    article.verificationStatus === 'VERIFIED' && Date.parse(article.publishedAt) <= Date.now()
+  );
+
+  return [...topicsBySlug.values()].map(topic => ({
+    ...topic,
+    articleCount: publishedArticles.filter(article => article.topicSlug.toLowerCase() === topic.slug.toLowerCase()).length
+  }));
+}
 
 function ensureDbExists(): DatabaseSchema {
   const dir = path.dirname(DB_PATH);
@@ -258,21 +289,12 @@ export const db = {
   },
 
   getTopics: (): TopicCluster[] => {
-    const data = ensureDbExists();
-    const articles = data.articles.filter(a => a.verificationStatus === 'VERIFIED');
-    return data.topics.map(t => {
-      const count = articles.filter(a => a.topicSlug.toLowerCase() === t.slug.toLowerCase()).length;
-      return {
-        ...t,
-        articleCount: count
-      };
-    });
+    return getTopicList(ensureDbExists());
   },
 
   getTopicBySlug: (slug: string): TopicCluster | undefined => {
-    const data = ensureDbExists();
     const targetSlug = decodeURIComponent(slug).toLowerCase();
-    return data.topics.find(t => t.slug.toLowerCase() === targetSlug);
+    return db.getTopics().find(topic => topic.slug.toLowerCase() === targetSlug);
   },
 
   getVerificationLogs: (): VerificationLog[] => {

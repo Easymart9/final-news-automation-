@@ -56,7 +56,23 @@ export async function runFullAutomationCycle(): Promise<{
       const generated = await generateAIArticle(item, verification);
 
       // Step 4: Image Automation
-      const imageInfo = fetchFeaturedImage(item.category);
+      const imageInfo = await fetchFeaturedImage(
+        item.category,
+        item.title,
+        db.getArticles().map(article => article.featuredImage).filter(Boolean)
+      );
+      if (imageInfo.needsReview) {
+        needsReview++;
+        db.addAutomationLog({
+          id: `log-image-review-${Date.now()}`,
+          taskName: 'Article Held for Image Review',
+          status: 'WARNING',
+          durationMs: 0,
+          details: `No relevant licensed image was available for "${item.title.slice(0, 100)}".`,
+          timestamp: new Date().toISOString()
+        });
+        continue;
+      }
       const selectedAuthor = authors[Math.floor(Math.random() * authors.length)];
       const topicObj = db.getTopics().find(t => t.name.toLowerCase() === item.category.toLowerCase()) || db.getTopics()[0];
 
@@ -74,6 +90,11 @@ export async function runFullAutomationCycle(): Promise<{
         verificationStatus: verification.status,
         featuredImage: imageInfo.imageUrl,
         imageCaption: imageInfo.caption,
+        featuredImageAlt: imageInfo.altText,
+        imageSourceUrl: imageInfo.sourceUrl,
+        imageLicense: imageInfo.license,
+        imageLicenseUrl: imageInfo.licenseUrl,
+        imageCredit: imageInfo.credit,
         author: selectedAuthor,
         sources: verification.sources,
         publishedAt: new Date().toISOString(),

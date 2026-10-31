@@ -21,14 +21,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const batchLimit = 8;
+    const batchLimit = 3;
     const result = await runScheduledNewsAutomationPipeline(batchLimit);
     return NextResponse.json({
-      success: true,
+      success: result.success,
       batchLimit,
       message: result.logMessage,
       result
-    });
+    }, { status: result.success ? 200 : 502 });
   } catch (error: any) {
     db.addAutomationLog({
       id: `log-cron-failure-${Date.now()}`,

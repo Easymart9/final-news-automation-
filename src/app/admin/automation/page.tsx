@@ -17,7 +17,7 @@ export default function AutomationPipelinePage() {
     setLogs(['[00:00:01] Initializing the protected news research and verification pipeline...']);
 
     try {
-      setLogs((prev) => [...prev, '[00:00:02] 📡 Scanning configured AI news feeds (TechCrunch AI, ArXiv preprints, MIT CSAIL)...']);
+      setLogs((prev) => [...prev, '[00:00:02] Scanning configured India, world, technology, business, sports, entertainment, science, education, health, schemes, and Northeast feeds...']);
       setLogs((prev) => [...prev, '[00:00:03] 🔍 Running deduplication filter against existing articles in data/db.json...']);
 
       const res = await fetch('/api/automation/run', { method: 'POST' });
@@ -51,13 +51,13 @@ export default function AutomationPipelinePage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider mb-1 font-heading">
             <Clock className="w-4 h-4 text-sky-600" />
-            <span>On-Demand Pipeline</span>
+            <span>Scheduled & On-Demand Pipeline</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
             Automation & Cron Control Console
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Daily scheduling is managed outside this application. This console runs the pipeline only when an authenticated admin starts it.
+            GitHub Actions requests a three-story batch every two hours. Production runs require matching CRON_SECRET and GROQ_API_KEY configuration.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function AutomationPipelinePage() {
         {/* Pipeline Controls (5 Cols) */}
         <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 space-y-6 shadow-xs">
           <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider font-heading border-b border-slate-100 pb-3">
-            On-Demand Pipeline Controls
+            Publishing Pipeline Controls
           </h3>
 
           <div className="space-y-4 text-xs font-mono">
@@ -84,9 +84,9 @@ export default function AutomationPipelinePage() {
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-sky-600" /> Scheduler:
                 </span>
-                <span className="text-amber-700 font-bold">Not configured here</span>
+                <span className="text-sky-700 font-bold">Every 2 hours</span>
               </div>
-              <p className="text-[11px] text-slate-500">Configure a protected cron job in the hosting provider.</p>
+              <p className="text-[11px] text-slate-500">Production execution depends on the GitHub CRON_SECRET and Hostinger API configuration.</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
@@ -94,19 +94,19 @@ export default function AutomationPipelinePage() {
                 <span className="flex items-center gap-1.5">
                   <Rss className="w-3.5 h-3.5 text-sky-600" /> RSS Ingestion Feeds:
                 </span>
-                <span className="text-slate-600">Checked per run</span>
+                <span className="text-slate-600">Fresh per run</span>
               </div>
-              <p className="text-[11px] text-slate-500">TechCrunch AI, ArXiv cs.AI, MIT CSAIL</p>
+              <p className="text-[11px] text-slate-500">BBC, The Hindu, MyGov, Assam Tribune, EastMojo, TechCrunch, Wired, arXiv</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
               <div className="flex items-center justify-between font-bold text-slate-900">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Fact Verifier Threshold:
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verification Gate:
                 </span>
-                <span className="text-sky-700 font-bold">80% Min</span>
+                <span className="text-sky-700 font-bold">80% + source</span>
               </div>
-              <p className="text-[11px] text-slate-500">Stories &lt;80% sent to Admin Review Queue</p>
+              <p className="text-[11px] text-slate-500">One primary source is checked; cross-feed matches are attributed separately, not called verified.</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
@@ -114,9 +114,9 @@ export default function AutomationPipelinePage() {
                 <span className="flex items-center gap-1.5">
                   <Database className="w-3.5 h-3.5 text-emerald-600" /> Database Persistence:
                 </span>
-                <span className="text-emerald-700">Atomic Swap</span>
+                <span className="text-emerald-700">Atomic JSON</span>
               </div>
-              <p className="text-[11px] text-slate-500">data/db.json (Zero Corruption)</p>
+              <p className="text-[11px] text-slate-500">data/db.json on the configured Hostinger application disk</p>
             </div>
           </div>
 

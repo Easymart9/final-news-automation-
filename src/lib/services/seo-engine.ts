@@ -21,7 +21,14 @@ export function generateNewsArticleSchema(article: Article, baseUrl: string = 'h
     },
     'headline': article.title,
     'description': article.metaDescription || article.summary || '',
-    'image': [article.featuredImage || `${baseUrl}/logo.png`],
+    'image': article.featuredImage ? [{
+      '@type': 'ImageObject',
+      'url': article.featuredImage,
+      'caption': article.imageCaption || article.title,
+      'creditText': article.imageCredit,
+      'license': article.imageLicenseUrl || article.imageLicense,
+      'acquireLicensePage': article.imageSourceUrl
+    }] : [`${baseUrl}/logo.png`],
     'datePublished': article.publishedAt,
     'dateModified': article.updatedAt || article.publishedAt,
     'author': {

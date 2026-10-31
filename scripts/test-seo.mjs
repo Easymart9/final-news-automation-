@@ -100,6 +100,15 @@ describe('production SEO responses', () => {
     assert.match(firstPageHtml, new RegExp(`<link rel="canonical" href="${baseUrl}/topics/${topicSlug}"`));
   });
 
+  it('serves every configured broad-news category route', async () => {
+    const topicSlugs = [
+      'india-news', 'world-news', 'breaking-news', 'technology-ai', 'business-finance', 'sports',
+      'entertainment-bollywood', 'science-space', 'education-jobs', 'health', 'government-schemes', 'assam-northeast'
+    ];
+    const responses = await Promise.all(topicSlugs.map((slug) => fetch(`${origin}/topics/${slug}`)));
+    assert.ok(responses.every((response) => response.status === 200));
+  });
+
   it('serves unique sitemap URLs on the canonical host', async () => {
     const response = await fetch(`${origin}/sitemap.xml`);
     const xml = await response.text();

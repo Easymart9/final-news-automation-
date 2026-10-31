@@ -165,7 +165,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="relative h-[320px] sm:h-[460px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
               <Image
                 src={article.featuredImage}
-                alt={article.title}
+                alt={article.featuredImageAlt || article.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 800px"
                 className="object-cover"
@@ -173,7 +173,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               />
               {article.imageCaption && (
                 <div className="absolute bottom-0 inset-x-0 bg-slate-900/90 text-white p-3 text-xs border-t border-slate-800">
-                  <p>📷 {article.imageCaption}</p>
+                  {article.imageSourceUrl ? (
+                    <a href={article.imageSourceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {article.imageCaption}
+                    </a>
+                  ) : <p>{article.imageCaption}</p>}
                 </div>
               )}
             </div>

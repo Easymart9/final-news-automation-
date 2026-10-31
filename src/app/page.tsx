@@ -18,8 +18,12 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
   // Top 3 latest news stories for interactive Hero Carousel
   const featuredArticles = articles.slice(0, 3);
 
-  // Secondary breaking headlines (stories right after carousel)
-  const topHeadlines = articles.slice(3, 7);
+  // Trending stories are ranked by live feed freshness and corroboration score.
+  const featuredIds = new Set(featuredArticles.map(article => article.id));
+  const topHeadlines = [...articles]
+    .filter(article => !featuredIds.has(article.id))
+    .sort((first, second) => (second.trendingScore || 0) - (first.trendingScore || 0) || Date.parse(second.publishedAt) - Date.parse(first.publishedAt))
+    .slice(0, 4);
 
   // Deep Dive Special Reports (stories 7 to 10)
   const specialReports = articles.slice(7, 10);

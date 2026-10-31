@@ -58,6 +58,11 @@ export interface Article {
   verificationStatus: VerificationStatus;
   featuredImage: string;
   imageCaption: string;
+  featuredImageAlt?: string;
+  imageSourceUrl?: string;
+  imageLicense?: string;
+  imageLicenseUrl?: string;
+  imageCredit?: string;
   author: Author;
   sources: SourceReference[];
   verificationLog?: VerificationLog;
@@ -65,6 +70,7 @@ export interface Article {
   updatedAt: string;
   readTimeMinutes: number;
   views: number;
+  trendingScore?: number;
   isFeatured: boolean;
   keywords: string[];
   faq: Array<{ question: string; answer: string }>;

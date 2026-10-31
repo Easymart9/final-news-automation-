@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio } from 'lucide-react';
+import { Menu, X, Search, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio, Globe, MapPin, Briefcase, Trophy, Clapperboard, Orbit, GraduationCap, Heart, Landmark, Map } from 'lucide-react';
 import { SearchModal } from '@/components/SearchModal';
 
 export const Navbar = () => {
@@ -33,11 +33,23 @@ export const Navbar = () => {
 
   const navLinks = [
     { name: 'Latest Feed', href: '/', icon: Zap, match: pathname === '/' },
-    { name: 'Models & LLMs', href: '/topics/llm-foundation-models', icon: Cpu, match: pathname.includes('llm-foundation-models') },
-    { name: 'AI Tools & Agents', href: '/topics/autonomous-ai-agents', icon: Bot, match: pathname.includes('autonomous-ai-agents') },
-    { name: 'Hardware & Silicon', href: '/topics/ai-chips-infrastructure', icon: Layers, match: pathname.includes('ai-chips-infrastructure') },
-    { name: 'Safety & Policy', href: '/topics/ai-safety-governance', icon: ShieldCheck, match: pathname.includes('ai-safety-governance') },
+    { name: 'India', href: '/topics/india-news', icon: MapPin, match: pathname.includes('india-news') },
+    { name: 'World', href: '/topics/world-news', icon: Globe, match: pathname.includes('world-news') },
+    { name: 'Breaking', href: '/topics/breaking-news', icon: Radio, match: pathname.includes('breaking-news') },
+    { name: 'Technology & AI', href: '/topics/technology-ai', icon: Cpu, match: pathname.includes('technology-ai') },
+    { name: 'Business', href: '/topics/business-finance', icon: Briefcase, match: pathname.includes('business-finance') },
+    { name: 'Sports', href: '/topics/sports', icon: Trophy, match: pathname.includes('sports') },
+    { name: 'Entertainment', href: '/topics/entertainment-bollywood', icon: Clapperboard, match: pathname.includes('entertainment-bollywood') },
+    { name: 'Science & Space', href: '/topics/science-space', icon: Orbit, match: pathname.includes('science-space') },
+    { name: 'Education & Jobs', href: '/topics/education-jobs', icon: GraduationCap, match: pathname.includes('education-jobs') },
+    { name: 'Health', href: '/topics/health', icon: Heart, match: pathname.includes('health') },
+    { name: 'Schemes', href: '/topics/government-schemes', icon: Landmark, match: pathname.includes('government-schemes') },
+    { name: 'Northeast', href: '/topics/assam-northeast', icon: Map, match: pathname.includes('assam-northeast') },
+    { name: 'AI Models', href: '/topics/llm-foundation-models', icon: Layers, match: pathname.includes('llm-foundation-models') },
+    { name: 'AI Agents', href: '/topics/autonomous-ai-agents', icon: Bot, match: pathname.includes('autonomous-ai-agents') },
     { name: 'Robotics', href: '/topics/computer-vision-robotics', icon: Sparkles, match: pathname.includes('computer-vision-robotics') },
+    { name: 'AI Policy', href: '/topics/ai-safety-governance', icon: ShieldCheck, match: pathname.includes('ai-safety-governance') },
+    { name: 'AI Chips', href: '/topics/ai-chips-infrastructure', icon: Zap, match: pathname.includes('ai-chips-infrastructure') },
   ];
 
   return (

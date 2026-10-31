@@ -8,10 +8,10 @@ export async function POST() {
   try {
     const result = await runScheduledNewsAutomationPipeline(10);
     return NextResponse.json({
-      success: true,
+      success: result.success,
       message: result.logMessage,
       result
-    });
+    }, { status: result.success ? 200 : 502 });
   } catch (error: any) {
     db.addAutomationLog({
       id: `log-manual-failure-${Date.now()}`,
