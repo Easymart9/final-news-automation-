@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  outputFileTracingIncludes: {
+    '/*': [
+      './node_modules/sharp/**/*',
+      './node_modules/@img/sharp-*/**/*',
+      './node_modules/@img/sharp-libvips-*/**/*'
+    ]
+  },
   turbopack: {
     root: process.cwd(),
   },

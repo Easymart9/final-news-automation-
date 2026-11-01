@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/prepare-standalone.mjs",
     "start": "next start",
     "lint": "eslint .",
     "test:seo": "node --test scripts/test-seo.mjs",
     "test:providers": "node --test scripts/test-ai-providers.mjs",
     "test:source-safety": "node --test scripts/test-safe-source-fetch.mjs",
+    "test:news-researcher": "node --test scripts/test-news-researcher.mjs",
+    "test:news-pipeline": "node --test scripts/test-news-pipeline.mjs",
+    "test:verification": "node --test scripts/test-fact-verifier.mjs",
+    "test:linux-standalone": "node scripts/test-linux-standalone.mjs",
     "db:seed": "node scripts/rebuild-db.js"
   },
   "dependencies": {
@@ -21,6 +25,7 @@
     "react-dom": "^18.3.1",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.18.1",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
