@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/prepare-standalone.mjs",
-    "start": "next start",
+    "build": "next build --webpack && node scripts/prepare-standalone.mjs",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "test:seo": "node --test scripts/test-seo.mjs",
     "test:providers": "node --test scripts/test-ai-providers.mjs",

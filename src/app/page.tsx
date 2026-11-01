@@ -10,8 +10,9 @@ import { AdsterraResponsiveBanner, AdsterraNativeBanner, AdsterraSidebarAd } fro
 
 export const dynamic = 'force-dynamic';
 
-export default function HomePage({ searchParams }: { searchParams: { page?: string } }) {
-  const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10));
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10));
   const articles = db.getArticles(undefined, undefined, true);
   const topics = db.getTopics();
 
