@@ -11,13 +11,14 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 interface AuthorPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
-  const author = db.getAuthorBySlug(params.slug);
+  const { slug } = await params;
+  const author = db.getAuthorBySlug(slug);
   if (!author) return {};
   return {
     title: 'AI-Assisted Editorial Desk | World Bulletin',
@@ -28,8 +29,9 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
   };
 }
 
-export default function AuthorPage({ params }: AuthorPageProps) {
-  const author = db.getAuthorBySlug(params.slug);
+export default async function AuthorPage({ params }: AuthorPageProps) {
+  const { slug } = await params;
+  const author = db.getAuthorBySlug(slug);
 
   if (!author) {
     notFound();
