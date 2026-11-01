@@ -1,5 +1,7 @@
 import { SourceReference, VerificationLog, VerificationStatus } from '@/types';
 import { RawNewsItem } from './news-researcher';
+import { generateJsonWithFallback } from './ai-providers';
+import { fetchNewsSource, readLimitedResponse } from './safe-source-fetch';
 
 export interface VerificationResult {
   status: VerificationStatus;
@@ -10,7 +12,7 @@ export interface VerificationResult {
 
 async function fetchWebpageText(url: string): Promise<string> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchNewsSource(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -18,7 +20,8 @@ async function fetchWebpageText(url: string): Promise<string> {
       signal: AbortSignal.timeout(6000) // 6 seconds timeout
     });
     if (!res.ok) return '';
-    const html = await res.text();
+    if (!res.ok) return '';
+    const html = await readLimitedResponse(res);
     
     // Remove script, style, nav, footer tags
     let bodyText = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
@@ -56,22 +59,12 @@ export async function verifyFactClaims(newsItem: RawNewsItem): Promise<Verificat
   let notes = '';
   let status: VerificationStatus = 'NEEDS_REVIEW';
 
-  const groqApiKey = process.env.GROQ_API_KEY;
-
-  if (groqApiKey && pageText.length > 100) {
+  if (pageText.length > 100) {
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${groqApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            {
-              role: 'system',
-              content: `You are an automated news verifier. Your task is to check if the claims in a news item title and snippet are factually supported by the extracted page text of the primary source.
+      const response = await generateJsonWithFallback([
+        {
+          role: 'system',
+          content: `You are an automated news verifier. Your task is to check if the claims in a news item title and snippet are factually supported by the extracted page text of the primary source.
 Return pure JSON in this format:
 {
   "verified": boolean,
@@ -79,38 +72,28 @@ Return pure JSON in this format:
   "verifiedClaims": string[], // list of specific empirical claims verified
   "notes": string // summary of findings
 }`
-            },
-            {
-              role: 'user',
-              content: `News Item Title: ${newsItem.title}\nNews Item Snippet: ${newsItem.snippet}\n\nExtracted Page Text:\n${pageText}`
-            }
-          ],
-          temperature: 0.1,
-          response_format: { type: 'json_object' }
-        })
-      });
-
-      if (response.ok) {
-        const json = await response.json();
-        const parsed = JSON.parse(json.choices[0].message.content);
-        baseScore = typeof parsed.confidenceScore === 'number' ? parsed.confidenceScore : 0;
-        notes = typeof parsed.notes === 'string' ? parsed.notes : '';
-        const hasVerifiedClaims = Array.isArray(parsed.verifiedClaims) && parsed.verifiedClaims.some(
-          (claim: unknown) => typeof claim === 'string' && claim.trim().length > 0
-        );
-        status = parsed.verified === true && hasVerifiedClaims && baseScore >= 80 ? 'VERIFIED' : 'NEEDS_REVIEW';
-      }
+        },
+        {
+          role: 'user',
+          content: `News Item Title: ${newsItem.title}\nNews Item Snippet: ${newsItem.snippet}\n\nExtracted Page Text:\n${pageText}`
+        }
+      ], 1024);
+      const parsed = JSON.parse(response.content);
+      baseScore = typeof parsed.confidenceScore === 'number' ? parsed.confidenceScore : 0;
+      notes = typeof parsed.notes === 'string' ? parsed.notes : '';
+      const hasVerifiedClaims = Array.isArray(parsed.verifiedClaims) && parsed.verifiedClaims.some(
+        (claim: unknown) => typeof claim === 'string' && claim.trim().length > 0
+      );
+      status = parsed.verified === true && hasVerifiedClaims && baseScore >= 80 ? 'VERIFIED' : 'NEEDS_REVIEW';
     } catch (err) {
-      console.warn("Groq claim verification failed; holding story for review", err);
+      console.warn('AI claim verification failed; holding story for review.', err instanceof Error ? err.message : 'Unknown error');
     }
   }
 
   if (baseScore === 0) {
     baseScore = 40;
     status = 'NEEDS_REVIEW';
-    notes = process.env.GROQ_API_KEY
-      ? `Automated verification was unavailable or inconclusive. The source at ${newsItem.link} requires human review.`
-      : 'GROQ_API_KEY is not configured; automated verification is unavailable and this story requires human review.';
+    notes = `Automated verification was unavailable or inconclusive. The source at ${newsItem.link} requires human review.`;
   }
 
   const sources: SourceReference[] = [

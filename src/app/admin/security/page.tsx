@@ -22,8 +22,8 @@ export default function SecuritySettingsPage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError('New password must be at least 6 characters long');
+    if (newPassword.length < 12) {
+      setError('New password must be at least 12 characters long');
       return;
     }
 
@@ -80,7 +80,7 @@ export default function SecuritySettingsPage() {
               Update Admin Password
             </h2>
             <p className="text-xs text-slate-500">
-              The system will verify your current password before committing changes to <code className="text-sky-700 font-mono">db.json</code>.
+              The system verifies your current password and stores a one-way password hash.
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function SecuritySettingsPage() {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password (default: admin123)"
+                placeholder="Enter current password"
                 required
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 text-xs text-slate-900 font-mono outline-none"
               />
@@ -128,7 +128,7 @@ export default function SecuritySettingsPage() {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Minimum 6 characters"
+                  placeholder="Minimum 12 characters"
                   required
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 text-xs text-slate-900 font-mono outline-none"
                 />

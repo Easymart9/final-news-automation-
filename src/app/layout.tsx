@@ -2,7 +2,32 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { PublicShell } from '@/components/PublicShell';
-import Script from 'next/script';
+import { serializeJsonLd } from '@/lib/services/seo-engine';
+
+const siteSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://worldbulletin.world/#organization',
+      name: 'World Bulletin',
+      url: 'https://worldbulletin.world',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://worldbulletin.world/logo.svg'
+      },
+      description: 'An AI-assisted global technology news publication with linked source references.'
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://worldbulletin.world/#website',
+      name: 'World Bulletin',
+      url: 'https://worldbulletin.world',
+      publisher: { '@id': 'https://worldbulletin.world/#organization' },
+      inLanguage: 'en'
+    }
+  ]
+};
 
 export const metadata: Metadata = {
   title: 'World Bulletin | AI-Assisted Technology News',
@@ -14,16 +39,24 @@ export const metadata: Metadata = {
     'AI News',
     'Artificial Intelligence',
     'Machine Learning',
-    'Fact Checked AI',
+    'AI-assisted technology news',
     'Llama 3.3',
     'Groq AI'
   ],
   icons: {
-    icon: '/favicon.ico',
+    icon: ['/logo.svg', '/favicon.ico'],
   },
   authors: [{ name: 'World Bulletin Team' }],
   alternates: {
     canonical: 'https://worldbulletin.world'
+  },
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION.trim() }
+      : {}),
+    ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION?.trim()
+      ? { other: { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION.trim() } }
+      : {})
   },
   other: {
     'google-adsense-account': 'ca-pub-1941031216214407'
@@ -33,6 +66,13 @@ export const metadata: Metadata = {
     description: 'AI-assisted technology news with linked source references.',
     type: 'website',
     url: 'https://worldbulletin.world',
+    images: [{ url: 'https://worldbulletin.world/logo.svg', width: 512, height: 512, alt: 'World Bulletin' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'World Bulletin | AI-Assisted Technology News',
+    description: 'AI-assisted news with linked source references and automated checks.',
+    images: ['https://worldbulletin.world/logo.svg']
   },
 };
 
@@ -46,38 +86,6 @@ export default function RootLayout({
       <head>
         {/* Google AdSense Account Meta Tag */}
         <meta name="google-adsense-account" content="ca-pub-1941031216214407" />
-
-        {/* Google tag (gtag.js) - Official Setup */}
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-H9BK8MP506"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-H9BK8MP506');
-              gtag('config', 'G-NMM93CJ1ZQ');
-            `
-          }}
-        />
-
-        {/* Google AdSense Universal Verification Script */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1941031216214407"
-          crossOrigin="anonymous"
-        />
-
-        {/* Auto ads for AMP */}
-        <script
-          async
-          custom-element="amp-auto-ads"
-          src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
-        />
 
         <script
           dangerouslySetInnerHTML={{
@@ -99,11 +107,10 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full bg-[#fafafa] antialiased" suppressHydrationWarning>
-        {/* Google AdSense AMP Auto Ads */}
-        {React.createElement('amp-auto-ads', {
-          type: 'adsense',
-          'data-ad-client': 'ca-pub-1941031216214407'
-        })}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteSchema) }}
+        />
         <PublicShell>{children}</PublicShell>
       </body>
     </html>

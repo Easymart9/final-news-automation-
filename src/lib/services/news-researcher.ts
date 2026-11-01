@@ -1,4 +1,5 @@
 import Parser from 'rss-parser';
+import { fetchNewsSource, readLimitedResponse } from '@/lib/services/safe-source-fetch';
 
 export interface RawNewsItem {
   id: string;
@@ -107,6 +108,26 @@ export function getNewsItemCategory(feed: NewsFeedConfig, title: string, ageMs: 
   if (ageMs <= 6 * 60 * 60 * 1000 && BREAKING_SIGNAL.test(title)) {
     return { category: 'Breaking News', topicSlug: 'breaking-news' };
   }
+  if (feed.category === 'Technology & AI') {
+    const classifications: Array<{ category: string; topicSlug: string; pattern: RegExp }> = [
+      { category: 'AI in Healthcare', topicSlug: 'ai-healthcare', pattern: /\b(health|healthcare|clinical|medical|patient|drug discovery)\b/i },
+      { category: 'AI in Education', topicSlug: 'ai-education', pattern: /\b(education|school|classroom|student|learning|teacher)\b/i },
+      { category: 'AI Chips & Infrastructure', topicSlug: 'ai-chips-infrastructure', pattern: /\b(chip|gpu|processor|semiconductor|datacenter|data center|inference hardware)\b/i },
+      { category: 'Computer Vision & Robotics', topicSlug: 'computer-vision-robotics', pattern: /\b(robot|robotics|computer vision|autonomous vehicle|vision model)\b/i },
+      { category: 'AI Safety & Governance', topicSlug: 'ai-safety-governance', pattern: /\b(safety|governance|regulation|regulatory|policy|alignment|responsible ai)\b/i },
+      { category: 'Autonomous AI Agents', topicSlug: 'autonomous-ai-agents', pattern: /\b(agent|agents|agentic|autonomous workflow|tool use)\b/i },
+      { category: 'AI in Business & Enterprise', topicSlug: 'ai-business-enterprise', pattern: /\b(enterprise|business|company|companies|workplace|industry adoption)\b/i },
+      { category: 'AI Applications', topicSlug: 'ai-applications-industry', pattern: /\b(application|deployment|product launch|ai-powered|generative ai tool)\b/i },
+      { category: 'AI Research & Science', topicSlug: 'ai-research-science', pattern: /\b(research|study|paper|arxiv|scientific|benchmark|experiment)\b/i }
+    ];
+    const classification = classifications.find(item => item.pattern.test(title));
+    if (classification) {
+      return { category: classification.category, topicSlug: classification.topicSlug };
+    }
+    if (/\b(language model|llm|foundation model|reasoning model|multimodal)\b/i.test(title)) {
+      return { category: 'LLMs & Foundation Models', topicSlug: 'llm-foundation-models' };
+    }
+  }
   return { category: feed.category, topicSlug: feed.topicSlug };
 }
 
@@ -126,7 +147,12 @@ async function fetchFeed(feedConfig: NewsFeedConfig): Promise<{ items: RawNewsIt
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const feed = await parser.parseURL(feedConfig.url);
+      const response = await fetchNewsSource(feedConfig.url, {
+        headers: { 'User-Agent': 'WorldBulletinNewsBot/1.0 (+https://worldbulletin.world/editorial-standards)' },
+        signal: AbortSignal.timeout(8000)
+      });
+      if (!response.ok) throw new Error(`RSS feed returned HTTP ${response.status}`);
+      const feed = await parser.parseString(await readLimitedResponse(response));
       const now = Date.now();
       const maxAgeMs = (feedConfig.maxAgeHours ?? MAX_FEED_AGE_HOURS) * 60 * 60 * 1000;
       const items = (feed.items ?? []).flatMap((item, index) => {

@@ -3,12 +3,12 @@ import { cookies } from 'next/headers';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { getAdminSessionToken } from '@/lib/admin-session';
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get('admin_session_token');
   const sessionToken = getAdminSessionToken();
   const isAuthenticated = Boolean(sessionToken && token?.value === sessionToken);

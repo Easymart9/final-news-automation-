@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ResilientImage } from '@/components/ResilientImage';
 import { Article } from '@/types';
 import { ChevronLeft, ChevronRight, ArrowUpRight, Clock, ShieldCheck, Sparkles } from 'lucide-react';
 
@@ -47,7 +47,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ articles }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
         {/* Left Visual Area (7 Cols) */}
         <div className="lg:col-span-7 relative h-[320px] sm:h-[440px] w-full overflow-hidden bg-slate-900">
-          <Image
+          <ResilientImage
             src={currentStory.featuredImage}
             alt={currentStory.title}
             fill

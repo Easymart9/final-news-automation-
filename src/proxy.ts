@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getAdminSessionToken } from '@/lib/admin-session';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('admin_session_token')?.value;
   const sessionToken = getAdminSessionToken();
@@ -34,4 +34,3 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/admin/:path*', '/api/admin/:path*', '/api/automation/run'],
 };
-

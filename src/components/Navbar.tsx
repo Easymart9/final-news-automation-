@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio, Globe, MapPin, Briefcase, Trophy, Clapperboard, Orbit, GraduationCap, Heart, Landmark, Map } from 'lucide-react';
+import { Menu, X, Search, Cpu, Sparkles, ShieldCheck, Zap, Layers, Bot, Radio, Globe, MapPin, Briefcase, Trophy, Clapperboard, Orbit, GraduationCap, Heart, Landmark, Map, FlaskConical, Workflow, BriefcaseBusiness, HeartPulse } from 'lucide-react';
 import { SearchModal } from '@/components/SearchModal';
 
 export const Navbar = () => {
@@ -50,6 +50,11 @@ export const Navbar = () => {
     { name: 'Robotics', href: '/topics/computer-vision-robotics', icon: Sparkles, match: pathname.includes('computer-vision-robotics') },
     { name: 'AI Policy', href: '/topics/ai-safety-governance', icon: ShieldCheck, match: pathname.includes('ai-safety-governance') },
     { name: 'AI Chips', href: '/topics/ai-chips-infrastructure', icon: Zap, match: pathname.includes('ai-chips-infrastructure') },
+    { name: 'AI Research', href: '/topics/ai-research-science', icon: FlaskConical, match: pathname.includes('ai-research-science') },
+    { name: 'AI Applications', href: '/topics/ai-applications-industry', icon: Workflow, match: pathname.includes('ai-applications-industry') },
+    { name: 'AI Business', href: '/topics/ai-business-enterprise', icon: BriefcaseBusiness, match: pathname.includes('ai-business-enterprise') },
+    { name: 'AI Healthcare', href: '/topics/ai-healthcare', icon: HeartPulse, match: pathname.includes('ai-healthcare') },
+    { name: 'AI Education', href: '/topics/ai-education', icon: GraduationCap, match: pathname.includes('ai-education') },
   ];
 
   return (
@@ -61,7 +66,7 @@ export const Navbar = () => {
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1.5 font-bold text-emerald-400 font-mono text-[11px]">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span>LIVE 24/7 FACT-CHECKED NEWS</span>
+                <span>AI-ASSISTED GLOBAL NEWS</span>
               </span>
               <span className="text-slate-700">|</span>
               <span className="hidden sm:inline text-slate-400 text-[11px]">{currentDate}</span>

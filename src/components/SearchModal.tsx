@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ResilientImage } from '@/components/ResilientImage';
 import { Search, X, ShieldCheck, TrendingUp, Loader2 } from 'lucide-react';
 import { Article } from '@/types';
 
@@ -17,10 +17,24 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const fetchResults = useCallback(async (searchQuery: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setResults(data);
+      }
+    } catch {
+      // Error handling
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      fetchResults('');
     } else {
       setQuery('');
       setResults([]);
@@ -34,22 +48,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [query, isOpen]);
-
-  const fetchResults = async (searchQuery: string) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
-      if (res.ok) {
-        const data = await res.json();
-        setResults(data);
-      }
-    } catch {
-      // Error handling
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [query, isOpen, fetchResults]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -155,7 +154,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                 </div>
 
                 <div className="relative h-14 w-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 shadow-2xs">
-                  <Image src={art.featuredImage} alt={art.title} fill className="object-cover" />
+                  <ResilientImage src={art.featuredImage} alt={art.title} fill className="object-cover" />
                 </div>
               </Link>
             ))

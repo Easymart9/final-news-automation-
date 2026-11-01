@@ -28,7 +28,7 @@ export function generateNewsArticleSchema(article: Article, baseUrl: string = 'h
       'creditText': article.imageCredit,
       'license': article.imageLicenseUrl || article.imageLicense,
       'acquireLicensePage': article.imageSourceUrl
-    }] : [`${baseUrl}/logo.png`],
+    }] : [`${baseUrl}/logo.svg`],
     'datePublished': article.publishedAt,
     'dateModified': article.updatedAt || article.publishedAt,
     'author': {
@@ -41,9 +41,15 @@ export function generateNewsArticleSchema(article: Article, baseUrl: string = 'h
       'name': 'World Bulletin',
       'logo': {
         '@type': 'ImageObject',
-        'url': `${baseUrl}/logo.png`
+        'url': `${baseUrl}/logo.svg`
       }
     },
+    ...(article.sponsoredBy ? {
+      'sponsor': {
+        '@type': 'Organization',
+        'name': article.sponsoredBy
+      }
+    } : {}),
     'keywords': keywordsList,
     'articleSection': article.category || 'Artificial Intelligence',
     'citation': citationList

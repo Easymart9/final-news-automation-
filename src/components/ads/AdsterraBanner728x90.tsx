@@ -1,12 +1,14 @@
 'use client';
 
 import React from 'react';
+import { useAdvertisingConsent } from '@/components/CookieConsent';
 
 interface AdsterraBannerProps {
   className?: string;
 }
 
 export function AdsterraBanner728x90({ className = '' }: AdsterraBannerProps) {
+  const advertisingAllowed = useAdvertisingConsent();
   const adHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -39,7 +41,9 @@ export function AdsterraBanner728x90({ className = '' }: AdsterraBannerProps) {
       <div className="w-[728px] h-[90px] max-w-full flex items-center justify-center bg-slate-50 border border-slate-200 rounded overflow-hidden">
         <iframe
           title="Adsterra 728x90 Leaderboard"
-          srcDoc={adHtml}
+          srcDoc={advertisingAllowed ? adHtml : undefined}
+          sandbox={advertisingAllowed ? 'allow-scripts allow-popups allow-popups-to-escape-sandbox' : undefined}
+          referrerPolicy="no-referrer"
           width="728"
           height="90"
           scrolling="no"

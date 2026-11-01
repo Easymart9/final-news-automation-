@@ -1968,7 +1968,6 @@
     "totalViews": 13092,
     "lastRunTimestamp": "2026-09-08T15:16:06.796Z",
     "groqApiStatus": "CONNECTED",
-    "adminPassword": "admin123",
     "lastCronRunTimestamp": "2026-09-08T15:16:06.796Z",
     "cronScheduleEnabled": true
   }

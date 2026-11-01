@@ -6,8 +6,8 @@ import { ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, FileSearch } fr
 
 export const dynamic = 'force-dynamic';
 
-export default function VerificationLogsPage() {
-  if (!isAuthenticated()) {
+export default async function VerificationLogsPage() {
+  if (!await isAuthenticated()) {
     redirect('/admin/login');
   }
 
@@ -73,4 +73,3 @@ export default function VerificationLogsPage() {
     </div>
   );
 }
-

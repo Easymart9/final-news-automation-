@@ -6,6 +6,7 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { AdsterraResponsiveBanner, AdsterraNativeBanner } from '@/components/ads';
 import { Metadata } from 'next';
+import { serializeJsonLd } from '@/lib/services/seo-engine';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,9 @@ export async function generateMetadata({ params, searchParams }: TopicPageProps)
 
   return {
     title: `${topic.name} | World Bulletin Editorial Desk`,
-    description: topic.description,
+    description: articles.length > 0
+      ? `${topic.description} Read ${articles.length} published World Bulletin reports, updates, and analysis.`
+      : topic.description,
     robots: {
       index: articles.length > 0 && currentPage <= totalPages,
       follow: true,
@@ -75,9 +78,31 @@ export default async function TopicPage({ params, searchParams }: TopicPageProps
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const articles = allArticles.slice(startIndex, startIndex + itemsPerPage);
+  const topicSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: topic.name,
+    description: topic.description,
+    url: `https://worldbulletin.world/topics/${topic.slug}`,
+    isPartOf: { '@id': 'https://worldbulletin.world/#website' },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: totalArticlesCount,
+      itemListElement: articles.map((article, index) => ({
+        '@type': 'ListItem',
+        position: startIndex + index + 1,
+        url: `https://worldbulletin.world/news/${article.slug}`,
+        name: article.title
+      }))
+    }
+  };
 
   return (
     <div className="bg-[#fafafa] min-h-screen pb-20 font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(topicSchema) }}
+      />
       {/* Top Breadcrumb */}
       <div className="border-b border-slate-100 py-3 bg-slate-50 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">

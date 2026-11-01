@@ -253,6 +253,17 @@ export default function ArticleManagementClient({ initialArticles }: ArticleMana
               </div>
 
               <div>
+                <label className="font-bold text-slate-700 block mb-1">Sponsor organization (leave blank for editorial content)</label>
+                <input
+                  type="text"
+                  maxLength={120}
+                  value={editingArticle.sponsoredBy || ''}
+                  onChange={(e) => setEditingArticle({ ...editingArticle, sponsoredBy: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-sky-500 font-medium"
+                />
+              </div>
+
+              <div>
                 <label className="font-bold text-slate-700 block mb-1">SEO Meta Description</label>
                 <textarea
                   rows={2}

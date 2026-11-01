@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ResilientImage } from '@/components/ResilientImage';
 import { db } from '@/lib/db';
 import { ArticleCard } from '@/components/ArticleCard';
 import { NewsTicker } from '@/components/NewsTicker';
@@ -74,7 +74,7 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
                 {topHeadlines.map((story) => (
                   <div key={story.id} className="group space-y-3 pb-5 sm:pb-0 border-b sm:border-b-0 border-slate-100 last:border-0 hover:bg-slate-50/70 p-2 rounded-xl transition-colors">
                     <div className="relative h-44 w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                      <Image
+                      <ResilientImage
                         src={story.featuredImage}
                         alt={story.title}
                         fill
@@ -91,7 +91,7 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
                         <Clock className="w-3 h-3 text-slate-400" />
                         <span>{story.readTimeMinutes} min read</span>
                         <span>•</span>
-                        <span className="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Fact Checked</span>
+                        <span className="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Automated Source Check</span>
                       </div>
 
                       <Link href={`/news/${story.slug}`}>
@@ -131,8 +131,8 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
                     <strong className="text-white">80% when configured</strong>
                   </div>
                   <div className="flex items-center justify-between text-slate-300">
-                    <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Primary Sources:</span>
-                    <strong className="text-white">2+ Required</strong>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Source References:</span>
+                    <strong className="text-white">Linked where available</strong>
                   </div>
                 </div>
 
@@ -205,7 +205,7 @@ export default function HomePage({ searchParams }: { searchParams: { page?: stri
               {specialReports.map((report) => (
                 <div key={report.id} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 hover:border-sky-300 transition-colors group">
                   <div className="relative h-48 w-full rounded-xl overflow-hidden bg-slate-100">
-                    <Image
+                    <ResilientImage
                       src={report.featuredImage}
                       alt={report.title}
                       fill

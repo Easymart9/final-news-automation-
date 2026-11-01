@@ -63,6 +63,7 @@ export interface Article {
   imageLicense?: string;
   imageLicenseUrl?: string;
   imageCredit?: string;
+  sponsoredBy?: string;
   author: Author;
   sources: SourceReference[];
   verificationLog?: VerificationLog;

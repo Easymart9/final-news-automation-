@@ -1,14 +1,37 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError('');
+    setIsSubmitting(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(formData.entries()))
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        setError(result.message || 'We could not deliver your message.');
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError('We could not deliver your message. Please try again or email the editorial desk directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -19,7 +42,7 @@ export default function ContactForm() {
         </div>
         <h3 className="text-base font-bold font-headline text-slate-900">Inquiry Received</h3>
         <p className="text-xs text-slate-600 max-w-md mx-auto">
-          Thank you for reaching out. Your communication has been securely dispatched to the World Bulletin editorial desk. We will review and follow up within 24–48 hours.
+          Thank you for reaching out. Your inquiry was delivered to the editorial desk.
         </p>
       </div>
     );
@@ -27,10 +50,22 @@ export default function ContactForm() {
 
   return (
     <form className="space-y-4 text-xs font-sans" onSubmit={handleSubmit}>
+      {error && (
+        <div role="alert" className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+      <div className="hidden" aria-hidden="true">
+        <label htmlFor="contact-website">Leave this field empty</label>
+        <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="font-bold text-slate-700 block">Full Name</label>
+          <label htmlFor="contact-name" className="font-bold text-slate-700 block">Full Name</label>
           <input
+            id="contact-name"
+            name="name"
             type="text"
             required
             placeholder="Dr. Jane Doe"
@@ -39,8 +74,10 @@ export default function ContactForm() {
         </div>
 
         <div className="space-y-1">
-          <label className="font-bold text-slate-700 block">Email Address</label>
+          <label htmlFor="contact-email" className="font-bold text-slate-700 block">Email Address</label>
           <input
+            id="contact-email"
+            name="email"
             type="email"
             required
             placeholder="jane@institution.org"
@@ -50,8 +87,8 @@ export default function ContactForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="font-bold text-slate-700 block">Subject / Department</label>
-        <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-sky-500 font-medium">
+        <label htmlFor="contact-subject" className="font-bold text-slate-700 block">Subject / Department</label>
+        <select id="contact-subject" name="subject" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-sky-500 font-medium">
           <option>General Editorial Feedback</option>
           <option>Factual Correction Submission</option>
           <option>Research Preprint / Lab Announcement</option>
@@ -60,8 +97,10 @@ export default function ContactForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="font-bold text-slate-700 block">Message Details</label>
+        <label htmlFor="contact-message" className="font-bold text-slate-700 block">Message Details</label>
         <textarea
+          id="contact-message"
+          name="message"
           rows={5}
           required
           placeholder="Include context, preprint links, or specific article URLs..."
@@ -71,9 +110,10 @@ export default function ContactForm() {
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="w-full sm:w-auto px-6 py-3 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs shadow-md shadow-sky-700/20 transition-all font-heading"
       >
-        Submit Inquiry to Editors
+        {isSubmitting ? 'Sending Inquiry…' : 'Submit Inquiry to Editors'}
       </button>
     </form>
   );

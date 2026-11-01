@@ -2,12 +2,15 @@
 
 import React from 'react';
 import { AdsterraBanner320x50 } from './AdsterraBanner320x50';
+import { useAdvertisingConsent } from '@/components/CookieConsent';
 
 interface AdsterraSidebarAdProps {
   className?: string;
 }
 
 export function AdsterraSidebarAd({ className = '' }: AdsterraSidebarAdProps) {
+  const advertisingAllowed = useAdvertisingConsent();
+  if (!advertisingAllowed) return null;
   return (
     <div className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-xs text-center space-y-2 ${className}`}>
       <div className="flex items-center justify-between border-b border-slate-100 pb-2">

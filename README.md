@@ -1,7 +1,7 @@
 # 🗞️ Worldwide AI News Platform
-> **Fact-Checked Automated AI Journalism & Technical Reporting System**
+> **AI-Assisted Global News & Technical Reporting System**
 
-A production-grade, automated artificial intelligence news publication built with **Next.js 14 App Router**, **TypeScript**, **Tailwind CSS**, and **Groq Llama-3.3-70B AI Engine**. Featuring automated RSS research, multi-source claim verification, atomic JSON database storage, password-protected administrative controls, and Google News compliant SEO sitemaps.
+A Next.js 16 and TypeScript news publication with RSS research, source-page checks, AI-assisted article generation, JSON-LD, and XML sitemaps. Run it on Node.js 20.9 or later. AI summaries can contain errors; source-page checks do not constitute independent multi-source fact-checking or human editorial review.
 
 ---
 
@@ -9,19 +9,30 @@ A production-grade, automated artificial intelligence news publication built wit
 
 - **📰 Publication-Grade Editorial Front Page**: Styled like *The New York Times*, *Wired*, and *The Verge* with breaking news tickers, lead spotlight stories, and visual coverage desks.
 - **⚡ Automated News Ingestion Pipeline**: Scans ArXiv preprints, MIT CSAIL, and TechCrunch RSS feeds for high-demand AI topics.
-- **🧠 Groq Llama-3.3-70B Synthesis**: Generates structured editorial articles complete with executive summaries, key takeaways, deep dives, author signatures, and citations.
-- **🛡️ Automated Multi-Source Fact Checking**: Evaluates empirical claims against external source URLs, generating a 0–100% Trust Score.
+- **🧠 AI Provider Fallback**: Supports Groq, Gemini, Mistral, OpenRouter, and SambaNova. Providers are disabled unless an API key is configured and the operator explicitly confirms the selected model/account is free.
+- **🛡️ Source Checks & Review Queue**: Checks source pages and holds unverified stories; a trust score is an automated heuristic, not proof of truth or independent corroboration.
 - **💾 Zero-Data-Loss Atomic JSON Database**: Prevents data corruption during concurrent writes using temporary file creation and atomic `fs.renameSync` file swaps (`data/db.json`).
 - **🔐 Password-Protected Admin Panel**: Secured `/admin` dashboard behind server-side HTTP-Only session cookies with live telemetry and pipeline execution tools.
 - **🔍 Full SEO & Google News Compatibility**: Auto-generated Google News XML Sitemaps (`/google-news-sitemap.xml`), standard sitemaps (`/sitemap.xml`), and JSON-LD Structured Data.
+- **🍪 Privacy & Commercial Disclosures**: Optional advertising/analytics consent, explicit sponsored-content labels, and an affiliate disclosure page.
 
 ---
 
 ## ⚡ How News Automation Works
 
-The platform includes an RSS research and news generation pipeline accessible from the Admin Panel (`/admin/automation`) or via authenticated background requests (`/api/automation/run`). The GitHub Actions workflow at `.github/workflows/news-automation.yml` calls the production cron endpoint every two hours and can also be started manually from the Actions tab. Manual runs default to one story; scheduled runs use three. Both require the repository secret `CRON_SECRET` to match the production environment variable. GitHub scheduled workflows can be delayed or disabled by repository inactivity, so monitor workflow runs and configure GitHub failure notifications.
+The platform includes an RSS research and news generation pipeline accessible from the Admin Panel (`/admin/automation`) or via authenticated background requests (`/api/automation/run`). The GitHub Actions workflow at `.github/workflows/news-automation.yml` schedules runs every two hours and an additional 09:00 IST edition. Scheduled batches are limited to three feed items and the pipeline caps verified publications at 35 per IST day; these are limits, not guaranteed article counts. Every scheduled request requires a `CRON_SECRET` of at least 32 characters in both GitHub Secrets and the production environment. GitHub Actions can be delayed or disabled by repository inactivity; monitor workflow runs and configure failure notifications.
 
-The scheduled endpoint processes at most 3 stories per run across India, world, technology and AI, business, sports, entertainment, science, education, health, government schemes, and Assam/Northeast desks. Current direct feeds include BBC, The Hindu, MyGov, Assam Tribune, EastMojo, TechCrunch, Wired, VentureBeat, and arXiv. Feed availability varies; stale or undated items are excluded, MyGov items need scheme-related terms, and breaking labels require an explicit urgency signal within six hours. Freshness and independent RSS matches contribute to homepage trend scores, but no Google Trends data is claimed. Actual publication depends on fresh sources, Groq verification/generation, a relevant licensed image, and duplicate checks. On production, set `DATABASE_PATH` to an absolute path on durable storage outside the deployment directory and copy the existing database there before deploying. No 35-article quota or successful production run is claimed until credentials are configured and a scheduled run succeeds.
+The scheduled endpoint processes at most 3 stories per run across India, world, technology and AI, business, sports, entertainment, science, education, health, government schemes, and Assam/Northeast desks. Current feeds include BBC, The Hindu, MyGov, Assam Tribune, EastMojo, TechCrunch, Wired, VentureBeat, and arXiv. Feed availability varies; stale or undated items are excluded, MyGov items need scheme-related terms, and breaking labels require an explicit urgency signal. Actual publication depends on fresh sources, an enabled free AI provider, a relevant licensed image, verification, and duplicate checks. On production, set `DATABASE_PATH` to durable storage outside the deployment directory and back up the existing database before deploying.
+
+### Provider and contact configuration
+
+Set provider API keys, SMTP credentials, and scheduler secrets only in Hostinger environment settings or GitHub Secrets—not in Git. Review the current provider pricing/plan for the selected key and model before setting its `*_FREE_TIER_CONFIRMED=true` flag. OpenRouter model IDs must end in `:free`. No provider is contacted until enabled, and this repository cannot confirm production connectivity. Contact delivery requires `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `CONTACT_EMAIL`. See [.env.example](./.env.example) for variable names and safe defaults.
+
+### Search Console and analytics
+
+Verify the `worldbulletin.world` domain property in Google Search Console and, optionally, Bing Webmaster Tools. Add the verification tokens to `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and `NEXT_PUBLIC_BING_SITE_VERIFICATION`, deploy, and confirm the provider can read the expected verification meta tag. To display actual organic search metrics in the admin dashboard, create a Google Cloud service account, enable the Search Console API, grant the service-account email access to the verified Search Console property, and store its complete JSON key in the server-only `GSC_SERVICE_ACCOUNT_JSON` variable. Set `GOOGLE_SEARCH_CONSOLE_SITE_URL` to the exact Search Console property identifier (for example `sc-domain:worldbulletin.world` or the verified URL-prefix). The dashboard uses finalized data for a 28-day range ending three days ago and shows query/page rows with impressions as optimization opportunities. Keep the service-account key private; never prefix it with `NEXT_PUBLIC_`.
+
+Google Analytics 4 measurement IDs are configured using `NEXT_PUBLIC_GA_MEASUREMENT_IDS` (comma-separated). Analytics scripts are deferred until the visitor grants analytics consent. Compare Search Console clicks/impressions/CTR and Analytics organic landing sessions; these tools report different metrics and require production property access. Search ranking improvements depend on content quality, competition, indexing, and external signals; this implementation does not guarantee positions or traffic.
 
 ```
 ┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐

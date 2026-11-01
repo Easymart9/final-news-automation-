@@ -8,6 +8,7 @@ const DB_PATH = process.env.DATABASE_PATH
 
 export interface ExtendedSystemStats extends SystemStats {
   adminPassword?: string;
+  adminPasswordHash?: string;
   lastCronRunTimestamp?: string;
   cronScheduleEnabled?: boolean;
 }
@@ -89,6 +90,51 @@ const DEFAULT_TOPICS: TopicCluster[] = [
     iconName: 'Eye',
     searchDemand: 'TRENDING',
     articleCount: 0
+  },
+  {
+    id: 'topic-ai-research',
+    name: 'AI Research & Science',
+    slug: 'ai-research-science',
+    description: 'Peer-reviewed AI research, reproducibility, new methods, and evidence-backed scientific findings.',
+    iconName: 'FlaskConical',
+    searchDemand: 'HIGH',
+    articleCount: 0
+  },
+  {
+    id: 'topic-ai-applications',
+    name: 'AI Applications',
+    slug: 'ai-applications-industry',
+    description: 'Real-world AI products, deployments, and applications across industries.',
+    iconName: 'Workflow',
+    searchDemand: 'HIGH',
+    articleCount: 0
+  },
+  {
+    id: 'topic-ai-business',
+    name: 'AI in Business & Enterprise',
+    slug: 'ai-business-enterprise',
+    description: 'Enterprise adoption, AI operations, business strategy, and measurable organizational impact.',
+    iconName: 'BriefcaseBusiness',
+    searchDemand: 'HIGH',
+    articleCount: 0
+  },
+  {
+    id: 'topic-ai-healthcare',
+    name: 'AI in Healthcare',
+    slug: 'ai-healthcare',
+    description: 'Clinical AI, medical research, health systems, and evidence-backed healthcare applications.',
+    iconName: 'HeartPulse',
+    searchDemand: 'HIGH',
+    articleCount: 0
+  },
+  {
+    id: 'topic-ai-education',
+    name: 'AI in Education',
+    slug: 'ai-education',
+    description: 'AI tools and research for teaching, learning, assessment, and education policy.',
+    iconName: 'GraduationCap',
+    searchDemand: 'HIGH',
+    articleCount: 0
   }
 ];
 
@@ -153,7 +199,6 @@ function ensureDbExists(): DatabaseSchema {
         totalViews: 0,
         lastRunTimestamp: '',
         groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'NOT_CONFIGURED',
-        adminPassword: process.env.ADMIN_PASSWORD || '',
         cronScheduleEnabled: false
       }
     };
@@ -194,7 +239,6 @@ function ensureDbExists(): DatabaseSchema {
       totalViews: 0,
       lastRunTimestamp: '',
       groqApiStatus: process.env.GROQ_API_KEY ? 'CONNECTED' : 'NOT_CONFIGURED',
-      adminPassword: process.env.ADMIN_PASSWORD || '',
       cronScheduleEnabled: false
     };
     modified = true;
@@ -323,9 +367,10 @@ export const db = {
     return ensureDbExists().stats;
   },
 
-  updateAdminPassword: (newPassword: string): void => {
+  updateAdminPasswordHash: (passwordHash: string): void => {
     const data = ensureDbExists();
-    data.stats.adminPassword = newPassword;
+    delete data.stats.adminPassword;
+    data.stats.adminPasswordHash = passwordHash;
     writeDb(data);
   },
 

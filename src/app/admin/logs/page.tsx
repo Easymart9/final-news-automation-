@@ -6,8 +6,8 @@ import { Activity, CheckCircle2, Clock, ListOrdered } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default function AutomationLogsPage() {
-  if (!isAuthenticated()) {
+export default async function AutomationLogsPage() {
+  if (!await isAuthenticated()) {
     redirect('/admin/login');
   }
 
@@ -68,4 +68,3 @@ export default function AutomationLogsPage() {
     </div>
   );
 }
-

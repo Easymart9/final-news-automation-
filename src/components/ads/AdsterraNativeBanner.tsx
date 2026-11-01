@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import { useAdvertisingConsent } from '@/components/CookieConsent';
 
 interface AdsterraNativeBannerProps {
   className?: string;
@@ -8,25 +9,11 @@ interface AdsterraNativeBannerProps {
 }
 
 export function AdsterraNativeBanner({ className = '', label = 'Sponsored Stories & Recommendations' }: AdsterraNativeBannerProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    containerRef.current.innerHTML = '';
-
-    const containerDiv = document.createElement('div');
-    containerDiv.id = 'container-2b5c851ccb60002fe95637d183b9d26a';
-    containerDiv.className = 'w-full min-h-[120px] flex justify-center items-center';
-    containerRef.current.appendChild(containerDiv);
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.setAttribute('data-cfasync', 'false');
-    script.src = 'https://pl31344741.profitableratecpmnetwork.com/2b5c851ccb60002fe95637d183b9d26a/invoke.js';
-    
-    containerRef.current.appendChild(script);
-  }, []);
+  const advertisingAllowed = useAdvertisingConsent();
+  const adHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body>
+    <div id="container-2b5c851ccb60002fe95637d183b9d26a"></div>
+    <script async data-cfasync="false" src="https://pl31344741.profitableratecpmnetwork.com/2b5c851ccb60002fe95637d183b9d26a/invoke.js"></script>
+  </body></html>`;
 
   return (
     <div className={`w-full my-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs overflow-hidden ${className}`}>
@@ -39,7 +26,19 @@ export function AdsterraNativeBanner({ className = '', label = 'Sponsored Storie
         </span>
       </div>
       
-      <div ref={containerRef} className="w-full min-h-[120px] flex items-center justify-center" />
+      {advertisingAllowed ? (
+        <iframe
+          title={label}
+          srcDoc={adHtml}
+          sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+          referrerPolicy="no-referrer"
+          className="w-full min-h-[120px] border-0"
+        />
+      ) : (
+        <p className="min-h-[40px] flex items-center justify-center text-xs text-slate-500">
+          Advertising is disabled until you allow it in cookie settings.
+        </p>
+      )}
     </div>
   );
 }

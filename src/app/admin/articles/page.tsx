@@ -6,8 +6,8 @@ import ArticleManagementClient from '@/components/ArticleManagementClient';
 
 export const dynamic = 'force-dynamic';
 
-export default function ArticleReviewPage() {
-  if (!isAuthenticated()) {
+export default async function ArticleReviewPage() {
+  if (!await isAuthenticated()) {
     redirect('/admin/login');
   }
 
@@ -15,6 +15,5 @@ export default function ArticleReviewPage() {
 
   return <ArticleManagementClient initialArticles={articles} />;
 }
-
 
 

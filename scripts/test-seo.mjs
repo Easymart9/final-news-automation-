@@ -102,13 +102,36 @@ describe('production SEO responses', () => {
     assert.match(firstPageHtml, new RegExp(`<link rel="canonical" href="${baseUrl}/topics/${topicSlug}"`));
   });
 
+  it('serves published search records without private article fields', async () => {
+    assert.ok(article, 'fixture database must contain a published article');
+    const response = await fetch(`${origin}/api/search?q=${encodeURIComponent(article.title.slice(0, 20))}`);
+    const results = await response.json();
+    assert.equal(response.status, 200);
+    assert.ok(results.length > 0 && results.length <= 10);
+    assert.ok(results.every((result) =>
+      result.id && result.title && result.slug && result.summary && result.publishedAt &&
+      !Object.hasOwn(result, 'content') && !Object.hasOwn(result, 'sources')
+    ));
+  });
+
   it('serves every configured broad-news category route', async () => {
     const topicSlugs = [
       'india-news', 'world-news', 'breaking-news', 'technology-ai', 'business-finance', 'sports',
-      'entertainment-bollywood', 'science-space', 'education-jobs', 'health', 'government-schemes', 'assam-northeast'
+      'entertainment-bollywood', 'science-space', 'education-jobs', 'health', 'government-schemes', 'assam-northeast',
+      'llm-foundation-models', 'autonomous-ai-agents', 'ai-chips-infrastructure', 'ai-safety-governance',
+      'computer-vision-robotics', 'ai-research-science', 'ai-applications-industry', 'ai-business-enterprise',
+      'ai-healthcare', 'ai-education'
     ];
     const responses = await Promise.all(topicSlugs.map((slug) => fetch(`${origin}/topics/${slug}`)));
     assert.ok(responses.every((response) => response.status === 200));
+    const emptyTopics = topicSlugs.filter(slug =>
+      !db.articles.some(item =>
+        item.topicSlug === slug && item.verificationStatus === 'VERIFIED' && Date.parse(item.publishedAt) <= Date.now()
+      )
+    );
+    const emptyTopicResponses = await Promise.all(emptyTopics.map(slug => fetch(`${origin}/topics/${slug}`)));
+    const emptyTopicHtml = await Promise.all(emptyTopicResponses.map(response => response.text()));
+    assert.ok(emptyTopicHtml.every(html => /<meta name="robots" content="noindex, follow"/.test(html)));
   });
 
   it('serves unique sitemap URLs on the canonical host', async () => {
@@ -119,10 +142,25 @@ describe('production SEO responses', () => {
     assert.ok(urls.length > 0);
     assert.equal(new Set(urls).size, urls.length);
     assert.ok(urls.every((url) => new URL(url).origin === baseUrl));
+    const emptyTopicSlugs = [
+      'india-news', 'world-news', 'breaking-news', 'technology-ai', 'business-finance', 'sports',
+      'entertainment-bollywood', 'science-space', 'education-jobs', 'health', 'government-schemes',
+      'assam-northeast', 'llm-foundation-models', 'autonomous-ai-agents', 'ai-chips-infrastructure',
+      'ai-safety-governance', 'computer-vision-robotics', 'ai-research-science',
+      'ai-applications-industry', 'ai-business-enterprise', 'ai-healthcare', 'ai-education'
+    ].filter(slug => !db.articles.some(item =>
+      item.topicSlug === slug && item.verificationStatus === 'VERIFIED' && Date.parse(item.publishedAt) <= Date.now()
+    ));
+    assert.ok(emptyTopicSlugs.every(slug => !urls.includes(`${baseUrl}/topics/${slug}`)));
+    assert.ok(urls.includes(`${baseUrl}/affiliate-disclosure`));
     const policyResponse = await fetch(`${origin}/editorial-standards`);
     const policyHtml = await policyResponse.text();
     assert.equal(policyResponse.status, 200);
     assert.match(policyHtml, new RegExp(`<link rel="canonical" href="${baseUrl}/editorial-standards"`));
+    const disclosureResponse = await fetch(`${origin}/affiliate-disclosure`);
+    const disclosureHtml = await disclosureResponse.text();
+    assert.equal(disclosureResponse.status, 200);
+    assert.match(disclosureHtml, new RegExp(`<link rel="canonical" href="${baseUrl}/affiliate-disclosure"`));
   });
 
   it('serves robots directives that advertise both sitemaps', async () => {
@@ -147,6 +185,47 @@ describe('production SEO responses', () => {
   it('rejects unauthenticated manual automation requests', async () => {
     const response = await fetch(`${origin}/api/automation/run`, { method: 'POST' });
     assert.equal(response.status, 401);
+  });
+
+  it('rejects unauthenticated admin mutations', async () => {
+    const response = await fetch(`${origin}/api/admin/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword: 'invalid', newPassword: 'invalid-password' })
+    });
+    assert.equal(response.status, 401);
+  });
+
+  it('bounds admin sign-in input before password verification', async () => {
+    const oversizedResponse = await fetch(`${origin}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', password: 'a'.repeat(5000) })
+    });
+    assert.equal(oversizedResponse.status, 413);
+
+    const malformedResponse = await fetch(`${origin}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{'
+    });
+    assert.equal(malformedResponse.status, 400);
+  });
+
+  it('blocks cross-origin contact posts and validates form payloads', async () => {
+    const crossOriginResponse = await fetch(`${origin}/api/contact`, {
+      method: 'POST',
+      headers: { Origin: 'https://attacker.example', 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.equal(crossOriginResponse.status, 403);
+
+    const invalidPayloadResponse = await fetch(`${origin}/api/contact`, {
+      method: 'POST',
+      headers: { Origin: origin, 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.equal(invalidPayloadResponse.status, 400);
   });
 
   it('rejects cron requests without a bearer secret', async () => {

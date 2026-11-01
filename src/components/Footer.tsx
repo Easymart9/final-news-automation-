@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
+import { CookieSettingsButton } from '@/components/CookieConsent';
 
 export const Footer = () => {
   return (
@@ -30,6 +31,11 @@ export const Footer = () => {
               <li><Link href="/topics/ai-chips-infrastructure" className="hover:text-white transition-colors">Silicon & Hardware</Link></li>
               <li><Link href="/topics/ai-safety-governance" className="hover:text-white transition-colors">Safety & Policy</Link></li>
               <li><Link href="/topics/computer-vision-robotics" className="hover:text-white transition-colors">Vision & Robotics</Link></li>
+              <li><Link href="/topics/ai-research-science" className="hover:text-white transition-colors">AI Research & Science</Link></li>
+              <li><Link href="/topics/ai-applications-industry" className="hover:text-white transition-colors">AI Applications</Link></li>
+              <li><Link href="/topics/ai-business-enterprise" className="hover:text-white transition-colors">AI Business & Enterprise</Link></li>
+              <li><Link href="/topics/ai-healthcare" className="hover:text-white transition-colors">AI in Healthcare</Link></li>
+              <li><Link href="/topics/ai-education" className="hover:text-white transition-colors">AI in Education</Link></li>
             </ul>
           </div>
 
@@ -41,6 +47,7 @@ export const Footer = () => {
               <li><Link href="/editorial-standards" className="hover:text-white transition-colors">Editorial Standards & Policy</Link></li>
               <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy & Cookies</Link></li>
               <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/affiliate-disclosure" className="hover:text-white transition-colors">Affiliate Disclosure</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact & Corrections</Link></li>
             </ul>
           </div>
@@ -56,6 +63,8 @@ export const Footer = () => {
             <Link href="/terms-of-service" className="hover:text-slate-300">Terms</Link>
             <span className="text-slate-700">•</span>
             <Link href="/contact" className="hover:text-slate-300">Contact</Link>
+            <span className="text-slate-700">•</span>
+            <CookieSettingsButton />
             <span className="text-slate-700">•</span>
             <a
               href="https://easypropdf.com"

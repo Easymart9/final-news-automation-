@@ -1,6 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
+import { ResilientImage } from '@/components/ResilientImage';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { db } from '@/lib/db';
@@ -114,6 +114,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             >
               {article.category}
             </Link>
+            {article.sponsoredBy && (
+              <span className="rounded border border-amber-300 bg-amber-50 px-2 py-1 font-bold uppercase tracking-wider text-amber-900">
+                Sponsored by {article.sponsoredBy}
+              </span>
+            )}
             <span className="text-slate-300">•</span>
             <span className="text-slate-600 flex items-center gap-1 font-mono">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
@@ -163,7 +168,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {/* Main Content Column */}
           <div className="lg:col-span-8 space-y-8">
             <div className="relative h-[320px] sm:h-[460px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
-              <Image
+              <ResilientImage
                 src={article.featuredImage}
                 alt={article.featuredImageAlt || article.title}
                 fill
@@ -302,7 +307,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <span>Ethics & Accuracy Stamp</span>
               </h4>
               <p className="text-slate-600 text-xs leading-relaxed">
-                World Bulletin strictly publishes news generated directly from primary scraped source materials. Fictional statements, unverified benchmarks, and speculation are filtered out automatically.
+                Articles are AI-assisted summaries of linked reporting or research. Automated source checks can miss errors and do not replace independent editorial review.
               </p>
               <Link href="/editorial-standards" className="text-xs text-sky-700 hover:text-sky-800 font-bold flex items-center gap-1 font-heading pt-1">
                 <span>Read Editorial Standards Policy</span>
@@ -331,6 +336,48 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   ))}
                 </div>
               </div>
+            )}
+            {[
+              'llm-foundation-models',
+              'autonomous-ai-agents',
+              'ai-chips-infrastructure',
+              'ai-safety-governance',
+              'computer-vision-robotics',
+              'ai-research-science',
+              'ai-applications-industry',
+              'ai-business-enterprise',
+              'ai-healthcare',
+              'ai-education'
+            ].includes(article.topicSlug) && (
+              <nav aria-label="Related AI coverage desks" className="space-y-3 border-t border-slate-200 pt-4">
+                <h4 className="pl-1 text-xs font-bold uppercase tracking-wider text-slate-500 font-heading">Explore AI Coverage</h4>
+                <div className="flex flex-wrap gap-2">
+                  {db.getTopics()
+                    .filter(topic => topic.slug !== article.topicSlug &&
+                      topic.articleCount > 0 &&
+                      [
+                        'llm-foundation-models',
+                        'autonomous-ai-agents',
+                        'ai-chips-infrastructure',
+                        'ai-safety-governance',
+                        'computer-vision-robotics',
+                        'ai-research-science',
+                        'ai-applications-industry',
+                        'ai-business-enterprise',
+                        'ai-healthcare',
+                        'ai-education'
+                      ].includes(topic.slug))
+                    .map(topic => (
+                      <Link
+                        key={topic.slug}
+                        href={`/topics/${topic.slug}`}
+                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-sky-800 hover:border-sky-300"
+                      >
+                        {topic.name}
+                      </Link>
+                    ))}
+                </div>
+              </nav>
             )}
           </aside>
         </div>

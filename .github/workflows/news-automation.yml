@@ -3,6 +3,7 @@ name: Scheduled News Automation
 on:
   schedule:
     - cron: '17 */2 * * *'
+    - cron: '30 3 * * *'
   workflow_dispatch:
     inputs:
       batch_limit:
@@ -28,8 +29,8 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           REQUESTED_BATCH_LIMIT: ${{ inputs.batch_limit }}
         run: |
-          if [[ -z "$CRON_SECRET" ]]; then
-            echo "Repository secret CRON_SECRET is required."
+          if [[ ${#CRON_SECRET} -lt 32 ]]; then
+            echo "A CRON_SECRET with at least 32 characters is required in repository secrets."
             exit 1
           fi
 

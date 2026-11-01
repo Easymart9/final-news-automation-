@@ -1,6 +1,8 @@
 import { RawNewsItem } from './news-researcher';
 import { VerificationResult } from './fact-verifier';
 import { sanitizeArticleContent } from './content-sanitizer';
+import { generateJsonWithFallback } from './ai-providers';
+import { fetchNewsSource, readLimitedResponse } from './safe-source-fetch';
 
 export interface GeneratedArticlePayload {
   title: string;
@@ -26,14 +28,15 @@ function slugify(text: string): string {
 
 async function fetchWebpageText(url: string): Promise<string> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchNewsSource(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
       },
       signal: AbortSignal.timeout(6000)
     });
     if (!res.ok) return '';
-    const html = await res.text();
+    if (!res.ok) return '';
+    const html = await readLimitedResponse(res);
     let bodyText = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
     bodyText = bodyText.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
     bodyText = bodyText.replace(/<nav\b[^<]*(?:(?!<\/nav>)<[^<]*)*<\/nav>/gi, '');
@@ -58,26 +61,13 @@ export async function generateAIArticle(
   newsItem: RawNewsItem,
   verification: VerificationResult
 ): Promise<GeneratedArticlePayload> {
-  const groqApiKey = process.env.GROQ_API_KEY;
-  if (!groqApiKey) {
-    throw new Error('GROQ_API_KEY is required to generate articles; no synthetic fallback is published.');
-  }
-
   const pageText = await fetchWebpageText(newsItem.link);
   const targetText = pageText.length > 100 ? pageText : newsItem.snippet;
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${groqApiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [
-        {
-          role: 'system',
-          content: `You are a technical news writer. Use only facts supported by the supplied source text and verification notes. Do not invent statistics, quotations, source attributions, or reporting. If the evidence is insufficient, state that clearly.
+  const response = await generateJsonWithFallback([
+    {
+      role: 'system',
+      content: `You are a technical news writer. Use only facts supported by the supplied source text and verification notes. Do not invent statistics, quotations, source attributions, or reporting. If the evidence is insufficient, state that clearly.
 
 Structure Requirements:
 1. "title": Catchy, authoritative, professional headline.
@@ -91,23 +81,13 @@ Structure Requirements:
 6. "faq": Array of up to 3 distinct {question, answer} objects addressing user queries.
 
 Return pure valid JSON.`
-        },
-        {
-          role: 'user',
-          content: `Headline: ${newsItem.title}\nCategory: ${newsItem.category}\nSource: ${newsItem.source}\nSource URL: ${newsItem.link}\nVerification notes: ${verification.log.notes}\n\nFactual Context:\n${targetText}`
-        }
-      ],
-      temperature: 0.3,
-      response_format: { type: 'json_object' }
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Groq article generation failed with status ${response.status}.`);
-  }
-
-  const json = await response.json();
-  const parsed = JSON.parse(json.choices[0].message.content);
+    },
+    {
+      role: 'user',
+      content: `Headline: ${newsItem.title}\nCategory: ${newsItem.category}\nSource: ${newsItem.source}\nSource URL: ${newsItem.link}\nVerification notes: ${verification.log.notes}\n\nFactual Context:\n${targetText}`
+    }
+  ], 8192);
+  const parsed = JSON.parse(response.content);
   if (typeof parsed.title !== 'string' || typeof parsed.summary !== 'string' || typeof parsed.content !== 'string' || !parsed.content.trim()) {
     throw new Error('Groq returned an incomplete article; it was not published.');
   }
@@ -140,6 +120,6 @@ Return pure valid JSON.`
       typeof (entry as { question?: unknown }).question === 'string' &&
       typeof (entry as { answer?: unknown }).answer === 'string'
     ) : [],
-    aiModelUsed: 'Groq (llama-3.3-70b-versatile)'
+    aiModelUsed: `${response.provider} (${response.model})`
   };
 }
